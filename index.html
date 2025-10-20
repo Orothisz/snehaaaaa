@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sneha — You Are Everything ♥</title>
+<style>
+  /* Lively personal theme + petals + handwriting */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Great+Vibes&display=swap');
+  :root{
+    --bg-1: #0f0520; /* deep violet */
+    --bg-2: #ff6aa3; /* pink */
+    --accent: #ffd166;
+    --accent-2: #7afcff;
+    --muted: #e6e6ea;
+    --card: rgba(255,255,255,0.06);
+    --text-light: #fffefc;
+    font-family: Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg-1),#3b0a4a 40%,var(--bg-2));color:var(--text-light);-webkit-font-smoothing:antialiased}
+  *{box-sizing:border-box}
+  .wrap{min-height:100vh;position:relative;z-index:1}
+
+  /* Hero */
+  .hero-full{min-height:72vh;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:36px}
+  .logo-small{font-weight:700;letter-spacing:1px;font-size:13px;color:rgba(255,255,255,0.9)}
+  .title-big{font-size:46px;line-height:1.02;margin:6px 0 8px;font-weight:800}
+  .script-name{font-family:'Great Vibes',cursive;font-size:64px;color:var(--accent);display:inline-block;margin-left:6px}
+  .subtitle{color:rgba(255,255,255,0.9);font-size:16px}
+
+  .hero-photo-portrait{width:360px;height:520px;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.5);border:6px solid rgba(255,255,255,0.06);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent)}
+  .hero-photo-portrait img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .9s ease}
+  .hero-photo-portrait:hover img{transform:scale(1.04)}
+
+  .stats-row{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+  .stat-pill{background:linear-gradient(90deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));padding:10px 14px;border-radius:999px;font-weight:700;color:var(--text-light);backdrop-filter:blur(6px)}
+  .big-button{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#0b0b0b;padding:12px 16px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
+
+  /* Content */
+  .content{padding:26px;display:grid;grid-template-columns:1fr 360px;gap:20px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 36px rgba(2,6,23,0.45)}
+  .typewriter{font-size:17px;line-height:1.6;white-space:pre-wrap;color:var(--muted)}
+  .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .gallery-grid img{width:100%;height:110px;object-fit:cover;border-radius:10px;cursor:pointer;transition:transform .25s ease}
+  .gallery-grid img:hover{transform:scale(1.04)}
+  .love-list{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto;margin-top:12px}
+  .love-item{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:10px;border-radius:10px;font-weight:600;color:var(--muted)}
+  .note-muted{color:var(--muted);font-size:13px;margin-top:8px}
+
+  footer{padding:18px;text-align:center;color:rgba(255,255,255,0.86)}
+
+  /* modal + lego egg */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:opacity .18s,visibility .18s;z-index:120}
+  .modal-bg.show{visibility:visible;opacity:1}
+  .modal{background:linear-gradient(180deg,#11101a,#150823);padding:18px;border-radius:12px;width:94%;max-width:720px;color:var(--muted)}
+  #legoEgg{position:fixed;left:12px;bottom:14px;z-index:150;opacity:0.06;cursor:pointer}
+
+  /* petals */
+  .petal{position:fixed;pointer-events:none;z-index:60;font-size:22px}
+
+  @media (max-width:980px){
+    .hero-full{grid-template-columns:1fr;min-height:60vh}
+    .hero-photo-portrait{width:100%;height:320px}
+    .content{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+  <!-- lightweight petals animation -->
+  <div id="petalLayer"></div>
+
+  <div class="wrap">
+    <div class="hero-full">
+      <div class="hero-left">
+        <div class="logo-small">a tiny universe — made by Sameer</div>
+        <h1 class="title-big">Hey girlfriend <span class="script-name">Sneha</span></h1>
+        <div class="subtitle" id="subtitle">Last night was unforgettable. This page remembers it the way I do. (it doesnt lol but yeaaaa)</div>
+
+        <div class="stats-row">
+          <div class="stat-pill" id="daysTogetherTop">Days: —</div>
+          <div class="stat-pill" id="sinceTop">Since: 20 Oct · 03:44 AM</div>
+          <button class="big-button" id="openSurprise">Open Surprise</button>
+        </div>
+
+        <div style="margin-top:20px" class="card">
+          <div id="typewriterMain" class="typewriter"></div>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="big-button" id="reasonOne">Give one reason</button>
+          <button class="big-button" id="reasonThree">Give 3 reasons</button>
+          <button class="big-button" id="showAllReasons">Show all reasons</button>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-photo-portrait" id="portraitWrap">
+          <img id="mainPhoto" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop" alt="Sneha portrait">
+        </div>
+        <div class="note-muted">Tap the portrait to cycle photos. Click the little brick at bottom-left for a tiny secret.</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Memories & Gallery</h3>
+          <div class="gallery-grid" id="gallery">
+            <!-- captions removed per request -->
+            <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=800&auto=format&fit=crop" alt="">
+            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop" alt="">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop" alt="">
+            <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&w=800&auto=format&fit=crop" alt="">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop" alt="">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop" alt="">
+          </div>
+          <div class="note-muted">Tip: click a photo to view it larger. (captions removed)</div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin:0 0 8px 0">Notes</h3>
+          <div style="color:var(--muted);font-size:15px;line-height:1.5">Add a note but lol I won’t be able to read it so just send it in my DMs 😉</div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <input id="noteInput" placeholder="Write something sweet..." style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted)" />
+            <button class="big-button" id="sendNote">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Why I love you</h3>
+          <div class="love-list" id="loveList"></div>
+          <div class="note-muted">Press "Give one reason" for a fresh line every time. These are things only I notice about you.</div>
+          <div class="note-muted" id="bottomReasonsNote" style="margin-top:12px">(reasons cannot load all the reasons here lol)</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 style="margin:0 0 8px 0">Play music</h3>
+          <!-- audio loads song.mp3 from repo root -->
+          <audio id="music" controls style="width:100%"><source src="song.mp3" type="audio/mpeg">Your browser does not support audio.</audio>
+          <div class="note-muted">Add a song you both love. Click play when ready. lol</div>
+        </div>
+
+        <div class="card" style="margin-top:12px;text-align:center">
+          <div style="font-weight:800">Built w ♥ by Sameer Jhamb</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="padding:28px 18px 48px;">
+      <small style="color:rgba(255,255,255,0.9)">Made with love — open this on a laptop for full effects.</small>
+    </footer>
+  </div>
+
+  <!-- modal -->
+  <div id="modalBg" class="modal-bg" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button id="closeModal" style="float:right;background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
+      <h2 style="margin-top:2px;color:var(--text-light)">For Sneha</h2>
+      <div id="modalContent" style="margin-top:10px;color:var(--muted);white-space:pre-wrap"></div>
+      <div style="margin-top:12px;text-align:right"><button id="modalCelebrate" class="big-button">Celebrate</button></div>
+    </div>
+  </div>
+
+  <!-- lego egg -->
+  <div id="legoEgg" title="tiny secret"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(180deg,#ffd166,#ffb84d);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.25);border:1px solid rgba(0,0,0,0.08)">🧱</div></div>
+
+<script>
+// personalization & interactions
+const START_ISO = '2025-10-20T03:44:00';
+const DISPLAY_NAME = 'Sneha';
+const LOVE_TEXT = `Last night was something really special. I DON'T KNOW HOW IT HAPPENED IN THE MOMENT AND I GENUINELY LOVE THAT. I LOVE YOU SO MUCH SNEH GARG.
+
+WITH LOVE,
+YOUR BOYFRIEND
+SAMEER JHAMB`;
+
+// set name & subtitle
+try{ document.querySelector('.script-name').textContent = DISPLAY_NAME; }catch(e){/* ignore if missing */}
+
+// days counter
+const startDate = new Date(START_ISO);
+function updateDays(){ const now=new Date(); const days=Math.floor((now-startDate)/(1000*60*60*24)); const el = document.getElementById('daysTogetherTop'); if(el) el.textContent = `Days: ${days}`; }
+updateDays(); setInterval(updateDays,60*1000);
+
+// main typewriter
+(function(){ const el=document.getElementById('typewriterMain'); if(!el) return; const text=LOVE_TEXT; let i=0; function step(){ el.textContent = text.slice(0,i); i++; if(i<=text.length) setTimeout(step,18+Math.random()*28); } setTimeout(step,700); })();
+
+// portrait cycle
+const photos=[
+  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200&auto=format&fit=crop'
+];
+let ph=0; const mainPhoto=document.getElementById('mainPhoto'); if(mainPhoto){ mainPhoto.addEventListener('click', ()=>{ ph=(ph+1)%photos.length; mainPhoto.src=photos[ph]; createHearts(6); }); }
+
+// gallery lightbox (captions removed)
+document.querySelectorAll('#gallery img').forEach(img=> img.addEventListener('click', ()=>{ const modalContent = document.getElementById('modalContent'); if(modalContent) modalContent.textContent = ''; const big=document.createElement('img'); big.src=img.src; big.style.maxWidth='92%'; big.style.borderRadius='12px'; big.style.display='block'; big.style.margin='10px auto'; const modal=document.getElementById('modalBg'); const content=document.getElementById('modalContent'); if(modal.querySelector('img.injected')) modal.querySelector('img.injected').remove(); content.parentElement.insertBefore(big, content); if(modal) modal.classList.add('show'); }));
+
+// reasons generator (ensures unique until exhausted, then reshuffles)
+const reasonsFull = [
+  'you','your smile','your personality','your laugh','your sleepy voice','your voice','your face','your body','your jokes','your music taste','your love for diet coke','your love for kinderjoy','your love for me','your love for waffles','your love for pizza','your love for lego flowers','your way of life','your ideologies','your perspectives','you for make me feel like im cared for','you for putting up with me','you for always trying your best','for your patience','your eyes','YOUR EYESSSSSSSSS I LOVE THEM THEY ARE PERFECT','how you rarely give up on your friendships','how you make me want to open up','how pretty you are','how beautiful you are','how stunning you are','how gorgeous you are','how lovely you are','how adorable you are','how cute you are','i love your nose','i love your cheeks','i love everything about you','i love your love with billie eilish','i love your liking of d4vd’s songs','i love your liking of cas’s songs','i love your liking of conan grey’s songs','i love your liking of olivias songs','i love how i make you smile','how you tell me things','how you trust me','how you are my girlfriend','your jealousy','your possessiveness','for being my first ever dandiya partner','for being my first time for holding hands with a girl','for matching fits with me','your dedication','your ability to be super funny sometimes lols','how you ghosted me😝😝','how you un ghosted me🤣😉','how you started saying lols','how you started saying 124','the way you say orange','how you tell me about your dreams','for telling me your lifes story','how you put in efforts','for believing in me','for reading the paragraphs i send','for giving me a reason to smile','for being my first girlfriend','for giving me the privilege of being your boyfriend','for existing','for breathing','for your (maybe)new love for sunflowers😜😜😜😜😜','for being my baby','for being my sweetheart','for being my jaan','for always listening to me','for being my wallpaper','for making me your wallpaper','for making me want to fall in love with you','for giving me a chance','for not ghosting me again😛😛','for being friends with shambhavi cuz if you werent then who knows😛😛','for being my snehaaaaaaaaa','for making me feel SO HAPPPYYY ALWAYS','for making me want to be a better human','for giving me the 1 person i trust the most','for being the best person i met this year','for being able to call you mine','how you somehhoe cut your mouth with a knife while eating the oreo silk i gave','for making me want to open up','for making me want to feel things','for making me cry lol (IN THE BEST WAY POSSIBLE)','hoe you remember stuff about me','how we can be honest with each other','how i FEEL WHILE TALKING TO YOU','how you ALWAYSSSDD LISTEN TO MY JOKES','how you never make me feel sidelines','how you prioritise me 😛😛😛','for being my bestfriend','for being close to me','how you are able to make communicate properly','for giving a person to dedicate this website to','for playing roblox with me','for playing scribl me','for you love of the song the winner takes it all😝😝😝😝','how you always win when we play scribl😉😉','how we try to find roblox games at night','FOR BEING YOU','FOR LOVING THE WAY YOU LOVE','FOR JUST EVERY SINGLE THING','SNEHA GARG I LOVE YOU'
+];
+
+// shuffle helper
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+// queue to ensure unique reasons until exhausted
+let reasonsQueue = shuffleArray(reasonsFull);
+function nextReason(){
+  if(reasonsQueue.length === 0){
+    // reshuffle after all used
+    reasonsQueue = shuffleArray(reasonsFull);
+  }
+  return reasonsQueue.shift();
+}
+
+// UI functions
+function addReason(){ const p = nextReason(); const el = document.createElement('div'); el.className='love-item'; el.textContent = p; const list=document.getElementById('loveList'); if(list) list.prepend(el); createHearts(6); }
+function addThree(){ for(let i=0;i<3;i++) addReason(); fireConfetti(40); }
+
+const reasonOneBtn = document.getElementById('reasonOne'); if(reasonOneBtn) reasonOneBtn.addEventListener('click', addReason);
+const reasonThreeBtn = document.getElementById('reasonThree'); if(reasonThreeBtn) reasonThreeBtn.addEventListener('click', addThree);
+
+// show all reasons (opens modal with the full list, in original order)
+const showAllBtn = document.getElementById('showAllReasons');
+if(showAllBtn){
+  showAllBtn.addEventListener('click', ()=>{
+    const modal = document.getElementById('modalBg');
+    const content = document.getElementById('modalContent');
+    if(!modal || !content) return;
+    // build a long list but keep it lightweight
+    const container = document.createElement('div');
+    container.style.maxHeight = '60vh'; container.style.overflow = 'auto'; container.style.paddingRight = '8px';
+    reasonsFull.forEach((r, idx)=>{
+      const d = document.createElement('div'); d.style.padding = '6px 0'; d.style.borderBottom = '1px solid rgba(255,255,255,0.02)'; d.textContent = `${idx+1}. ${r}`; container.appendChild(d);
+    });
+    // small footer note
+    const footerNote = document.createElement('div'); footerNote.style.marginTop='10px'; footerNote.style.color='var(--muted)'; footerNote.textContent = "(couldn't load every single tiny reason here lol)";
+    // clear content then append
+    content.textContent = '';
+    content.appendChild(container);
+    content.appendChild(footerNote);
+    modal.classList.add('show');
+  });
+}
+
+// send note -> copies and offers DM template
+const sendNoteBtn = document.getElementById('sendNote'); if(sendNoteBtn){ sendNoteBtn.addEventListener('click', ()=>{ const input = document.getElementById('noteInput'); if(!input) return; const v=input.value.trim(); if(!v) return alert('Write a short note first'); const dm = `hey ${DISPLAY_NAME}, check this note I left for you: "${v}" — luv, Sameer`; if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(dm).then(()=> alert('Note prepared and copied to clipboard — paste in my DMs 😉')).catch(()=> prompt('Copy this DM text:', dm)); } else { prompt('Copy this DM text:', dm); } }); }
+
+// modal controls
+const modalBg=document.getElementById('modalBg'); const openSurpriseBtn = document.getElementById('openSurprise'); if(openSurpriseBtn){ openSurpriseBtn.addEventListener('click', ()=>{ if(modalBg){ modalBg.classList.add('show'); const mc = document.getElementById('modalContent'); if(mc) mc.textContent = LOVE_TEXT; createHearts(20); fireConfetti(80);
+
+  // music: if song.mp3 exists in repo root, play it on user click (tied to openSurprise user action)
+  try{
+    const musicEl = document.getElementById('music');
+    if(musicEl && musicEl.paused){
+      // ensures the <audio> has the correct src (already set to song.mp3 in HTML)
+      musicEl.currentTime = 0;
+      const p = musicEl.play();
+      if(p && p.catch){
+        p.catch(()=> {/* autoplay blocked — user can press play manually */});
+      }
+    }
+  }catch(e){/* ignore audio errors */}
+ } }); }
+const closeModalBtn = document.getElementById('closeModal'); if(closeModalBtn) closeModalBtn.addEventListener('click', ()=> { if(modalBg) modalBg.classList.remove('show'); });
+const modalCelebrateBtn = document.getElementById('modalCelebrate'); if(modalCelebrateBtn) modalCelebrateBtn.addEventListener('click', ()=>{ fireConfetti(160); createFireworks(8); });
+
+// lego egg (updated message)
+(function(){ const egg=document.getElementById('legoEgg'); if(!egg) return; let clicks=0; egg.addEventListener('click', ()=>{ clicks++; egg.style.opacity=0.26; if(clicks>=3){ const legoModal=document.createElement('div'); legoModal.className='modal-bg show'; legoModal.innerHTML=`<div class="modal" role="dialog" aria-modal="true"><button style="float:right;background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer" onclick="this.parentElement.parentElement.classList.remove('show')">✕</button><h3 style="color:var(--text-light)">Tiny Lego Flowers 🌼</h3><div style="color:var(--muted);margin-top:8px">hey love hope you loved the flowers</div><div style="display:flex;gap:8px;justify-content:center;margin-top:12px">` + Array.from({length:5}).map((_,i)=>`<div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,hsl(${i*60} 80% 60%), hsl(${i*60} 80% 50%));">🌸</div>`).join('') + `</div></div>`; document.body.appendChild(legoModal); createHearts(28); fireConfetti(120); clicks=0; } }); })();
+
+// confetti/heart/fireworks (lightweight)
+const confettiCanvas = document.getElementById('confetti');
+const ctx = confettiCanvas ? confettiCanvas.getContext('2d') : null;
+let W = (confettiCanvas && window.innerWidth) ? confettiCanvas.width = window.innerWidth : 0;
+let H = (confettiCanvas && window.innerHeight) ? confettiCanvas.height = window.innerHeight : 0;
+window.addEventListener('resize', ()=>{ if(confettiCanvas){ W = confettiCanvas.width = window.innerWidth; H = confettiCanvas.height = window.innerHeight; } });
+
+function random(min,max){return Math.random()*(max-min)+min}
+
+// ensure parts is declared before any function uses it
+let parts = [];
+
+class Confetto{
+  constructor(){
+    this.x = random(0,W);
+    this.y = random(-H,0);
+    this.size = random(6,14);
+    this.color = `hsl(${Math.floor(random(0,360))}deg 70% 60%)`;
+    this.vx = random(-2,2);
+    this.vy = random(2,6);
+  }
+  update(){ this.x += this.vx; this.y += this.vy; this.vy *= 0.998; }
+  draw(){ if(!ctx) return; ctx.fillStyle = this.color; ctx.fillRect(this.x,this.y,this.size,this.size*0.6); }
+}
+
+function render(){ if(!ctx) return; ctx.clearRect(0,0,W,H); for(const p of parts){ p.update(); p.draw(); } parts = parts.filter(p => p.y < H + 50); }
+
+function fireConfetti(n=80){
+  if(!confettiCanvas || !ctx) return;
+  for(let i=0;i<n;i++) parts.push(new Confetto());
+  if(!window._confettiInt){
+    window._confettiInt = setInterval(render, 1000/60);
+    setTimeout(()=>{ clearInterval(window._confettiInt); window._confettiInt = null; parts = []; if(ctx) ctx.clearRect(0,0,W,H); }, 5000);
+  }
+}
+
+function createHearts(n=8){
+  for(let i=0;i<n;i++){
+    const e = document.createElement('div');
+    e.style.position = 'fixed';
+    e.style.left = (30 + Math.random()*40) + '%';
+    e.style.top = (30 + Math.random()*40) + '%';
+    e.style.zIndex = 200;
+    e.style.fontSize = (18 + Math.random()*36) + 'px';
+    e.textContent = '💖';
+    document.body.appendChild(e);
+    const d = 900 + Math.random()*900;
+    e.animate([
+      { transform: 'translateY(0) scale(1)', opacity:1 },
+      { transform: `translateY(-${120+Math.random()*180}px) scale(.4)`, opacity:0 }
+    ], { duration: d, easing: 'cubic-bezier(.2,.9,.2,1)' });
+    setTimeout(()=> e.remove(), d+60);
+  }
+}
+
+function createFireworks(q=6){
+  for(let i=0;i<q;i++){
+    for(let j=0;j<12;j++){
+      const s = document.createElement('div');
+      s.style.position = 'fixed';
+      s.style.left = (30 + Math.random()*40) + '%';
+      s.style.top = (30 + Math.random()*40) + '%';
+      s.style.width = '6px';
+      s.style.height = '6px';
+      s.style.borderRadius = '50%';
+      s.style.background = 'white';
+      document.body.appendChild(s);
+      const dur = 700 + Math.random()*900;
+      s.animate([
+        { transform: 'translateY(0) scale(1)', opacity:1 },
+        { transform: `translateY(-${60+Math.random()*120}px) scale(.1)`, opacity:0 }
+      ], { duration: dur });
+      setTimeout(()=> s.remove(), dur+80);
+    }
+  }
+}
+
+// petals: gentle falling emoji petals for personality
+(function spawnPetals(){
+  const layer = document.getElementById('petalLayer');
+  if(!layer) return;
+  const petals = ['🌸','🌺','🌼','💐'];
+  for(let i=0;i<14;i++){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = (5 + Math.random()*90) + '%';
+    p.style.top = (-10 - Math.random()*40) + '%';
+    p.style.opacity = 0.9;
+    p.textContent = petals[Math.floor(Math.random()*petals.length)];
+    layer.appendChild(p);
+    const dur = 7000 + Math.random()*9000;
+    p.animate([
+      { transform: 'translateY(0) rotate(0) scale(0.9)', opacity:1 },
+      { transform: `translateY(${100 + Math.random()*120}vh) rotate(${Math.random()*720-360}deg) scale(0.6)`, opacity:0 }
+    ], { duration: dur, iterations: 1, easing: 'linear' });
+    setTimeout(()=> p.remove(), dur+120);
+  }
+  setTimeout(spawnPetals, 8000);
+})();
+
+// accessibility: close modal on background click
+if(document.getElementById('modalBg')) document.getElementById('modalBg').addEventListener('click',(e)=>{ if(e.target===document.getElementById('modalBg')) document.getElementById('modalBg').classList.remove('show'); });
+
+// initial small entrance
+setTimeout(()=>{ createHearts(10); },900);
+
+</script>
+</body>
+</html>
