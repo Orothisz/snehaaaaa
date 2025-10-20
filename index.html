@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Sneha — Surprise (YouTube audio, immediate start)</title>
-<meta name="description" content="Surprise for Sneha — built by Sameer" />
+<title>Sneha - Surprise (YouTube audio, immediate start)</title>
+<meta name="description" content="Surprise for Sneha - built by Sameer" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -71,7 +71,7 @@
     <video id="introVideo" class="intro-video" src="/assets/video.mp4" muted playsinline preload="metadata" poster="/assets/video-poster.jpg"></video>
   </div>
   <h2 style="font-family:'Great Vibes',cursive;font-size:56px;color:var(--accent);margin:14px 0 6px">Hey Sneha</h2>
-  <p style="color:rgba(255,255,255,0.92);max-width:900px;text-align:center;margin:0 0 12px">Last night was something really special. Press <strong>Open Surprise</strong> when you're ready — this will start the music and the intro (overlay will close immediately).</p>
+  <p id="introParagraph" style="color:rgba(255,255,255,0.92);max-width:900px;text-align:center;margin:0 0 12px">THE NIGHT WAS SO JNISDSOI IT WAS AMAZING</p>
   <button id="enterBtn">Open Surprise</button>
 </div>
 
@@ -83,7 +83,7 @@
 <div class="wrap" id="appWrap" style="transform:none">
   <section class="hero">
     <div>
-      <div class="logo">a tiny universe — made by Sameer</div>
+      <div class="logo">a tiny universe - made by Sameer</div>
       <h1 class="title">Hey girlfriend <span class="sneha">Sneha</span></h1>
       <div class="subtitle" id="subtitle">This page remembers it the way I do. (it doesn't lol but yeaaaa)</div>
 
@@ -179,7 +179,7 @@
     </aside>
   </section>
 
-  <footer>Made with love — best viewed on desktop for full effects.</footer>
+  <footer>Made with love - best viewed on desktop for full effects.</footer>
 </div>
 
 <!-- modal & lego -->
@@ -206,7 +206,11 @@ function showBottomToast(text, ms = 2000){
    Typewriter & days
    ------------------------- */
 const START_ISO = '2025-10-20T03:44:00';
-const LOVE_TEXT = `Last night was something really special. I DON'T KNOW HOW IT HAPPENED IN THE MOMENT AND I GENUINELY LOVE THAT. I LOVE YOU SO MUCH SNEH GARG.\n\nWITH LOVE,\nYOUR BOYFRIEND\nSAMEER JHAMB`;
+const LOVE_TEXT = `THE NIGHT WAS SO JNISDSOI IT WAS AMAZING
+
+WITH LOVE,
+YOUR BOYFRIEND
+SAMEER JHAMB`;
 (function(){
   const el = $('typewriter'); if(el){ let i=0; function step(){ el.textContent = LOVE_TEXT.slice(0,i); i++; if(i<=LOVE_TEXT.length) setTimeout(step, 16 + Math.random()*22); } setTimeout(step,700); }
   const start = new Date(START_ISO);
@@ -356,7 +360,7 @@ function initYT(){
   const div = document.createElement('div'); div.id = 'ytPlayer'; div.style.width='320px'; div.style.height='180px'; wrap.appendChild(div);
   ytPlayer = new YT.Player('ytPlayer', {
     height: '180', width: '320', videoId: YT_ID,
-    playerVars: { controls: 1, modestbranding: 1, rel: 0, playsinline: 1 },
+    playerVars: { controls: 1, modestbranding: 1, rel: 0, playsinline: 1, autoplay: 0 },
     events: {
       onReady: function(e){ /* ready */ },
       onStateChange: function(e){ /* nothing special here */ }
@@ -368,44 +372,78 @@ function initYT(){
 async function playYouTube(){
   return new Promise((res) => {
     if(window.YT && ytPlayer && ytPlayer.playVideo){
-      try{ ytPlayer.seekTo(0); ytPlayer.playVideo(); res(true); }catch(e){ console.warn('YT play error', e); res(false); }
+      try{ ytPlayer.playVideo(); res(true); }catch(e){ console.warn('YT play error', e); res(false); }
     } else {
       // maybe still loading; try to init and wait for player
       let tries = 0;
       const wait = setInterval(()=> {
         tries++;
-        if(window.YT && ytPlayer && ytPlayer.playVideo){ try{ ytPlayer.seekTo(0); ytPlayer.playVideo(); clearInterval(wait); res(true); }catch(e){ clearInterval(wait); res(false); } }
+        if(window.YT && ytPlayer && ytPlayer.playVideo){ try{ ytPlayer.playVideo(); clearInterval(wait); res(true); }catch(e){ clearInterval(wait); res(false); } }
         if(tries > 30){ clearInterval(wait); res(false); }
       }, 200);
     }
   });
 }
 
+/* Attempt to unlock audio on mobile via Web Audio API (best-effort).
+   Many mobile browsers allow a user gesture to resume an AudioContext,
+   which can help un-block audio for other elements (like iframes).
+*/
+async function unlockAudio(){
+  try{
+    if(window.__audioUnlocked) return true;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if(ctx.state === 'suspended') await ctx.resume();
+    // create a tiny silent buffer and play it quickly to ensure unlock
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource(); src.buffer = buffer; src.connect(ctx.destination);
+    src.start(0);
+    src.stop(0);
+    // mark unlocked
+    window.__audioUnlocked = true;
+    // close context after a tick to be polite
+    setTimeout(()=>{ try{ ctx.close(); }catch(e){} }, 500);
+    return true;
+  }catch(e){
+    console.warn('unlockAudio failed', e);
+    return false;
+  }
+}
+
 /* -------------------------
    Intro overlay flow:
    - User clicks Open Surprise -> UI starts immediately (overlay hidden)
-   - We attempt to play the intro video (muted) to satisfy autoplay
-   - Then we pause the intro video and hide the overlay immediately
-   - We also attempt to start YouTube audio
+   - We attempt to unlock audio (WebAudio), then start the YouTube player
+   - The overlay hides immediately as requested
    ------------------------- */
 $('enterBtn') && $('enterBtn').addEventListener('click', async ()=>{
   const v = $('introVideo');
-  // try to play the video (muted) - useful to gain user gesture
-  try{
-    if(v && v.play){ await v.play().catch(()=>{}); }
-  }catch(e){ console.warn('intro video play attempt failed', e); }
-  // Hide overlay IMMEDIATELY (user asked site to start despite video)
+  // play/poke intro video (muted) to use the gesture
+  try{ if(v && v.play){ await v.play().catch(()=>{}); } }catch(e){ console.warn('intro video play attempt failed', e); }
+  // Hide overlay IMMEDIATELY (user requested site to start)
   const overlay = $('introOverlay'); if(overlay) overlay.style.display = 'none';
 
-  // pause/reset video (we don't want it to keep playing in background)
+  // pause/reset video (we don't want it playing in background)
   try{ if(v){ v.pause(); v.currentTime = 0; } }catch(e){ /* ignore */ }
+
+  // try to unlock audio via WebAudio (best-effort)
+  await unlockAudio();
 
   // attempt YouTube audio start
   const ok = await playYouTube();
-  if(!ok) showBottomToast('Could not auto-start YouTube — press Play', 2200);
-  else showBottomToast('Playing song', 1200);
+  if(!ok){
+    showBottomToast('Could not auto-start audio on this device. Please press Play.', 3500);
+    // If it didn't start automatically, highlight Play button visually
+    const playBtn = $('playSongBtn');
+    if(playBtn){
+      playBtn.style.outline = '3px solid rgba(255,209,102,0.9)';
+      setTimeout(()=> playBtn.style.outline = '', 2500);
+    }
+  } else {
+    showBottomToast('Playing song', 1200);
+  }
 
-  // little celebration when overlay closed
+  // celebration when overlay closed
   spawnHearts(18); fireConfetti(120); createFireworks(6);
 });
 
@@ -414,8 +452,10 @@ $('openSurpriseInline') && $('openSurpriseInline').addEventListener('click', ()=
 
 /* Play song button - just triggers YouTube play */
 $('playSongBtn') && $('playSongBtn').addEventListener('click', async ()=>{
+  // user gesture here should allow playback
+  await unlockAudio();
   const ok = await playYouTube();
-  if(!ok) showBottomToast('Could not start YouTube playback — try Open Surprise', 2100);
+  if(!ok) showBottomToast('Could not start YouTube playback — try reloading or press Play in the player', 3000);
   else showBottomToast('Playing song', 1200);
 });
 
