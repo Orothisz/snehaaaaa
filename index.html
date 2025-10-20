@@ -186,7 +186,9 @@ function showBottomToast(text, ms = 2000){
    Typewriter & days
    ------------------------- */
 const START_ISO = '2025-10-20T03:44:00';
-const LOVE_TEXT = `THE NIGHT WAS SO JNISDSOI IT WAS AMAZING. thank you so much sneha garg for being my girlfriend, for listening to me, for loving me, for making me feel like someone. i love you so so much.
+const LOVE_TEXT = `THE NIGHT WAS SO JNISDSOI IT WAS AMAZING. THANK
+YOU SO MUCH SNEHA GARG FOR BEING MY GIRLFRIEND, CARING, LISTENING TO ME, BEING THERE FOR ME
+I LOVE YOU SO SO MUCH
 
 WITH LOVE,
 YOUR BOYFRIEND
@@ -483,7 +485,7 @@ $('sendNote') && $('sendNote').addEventListener('click', async ()=>{
   }
   try{
     await navigator.clipboard.writeText(text);
-    showBottomToast('Copied & saved — NOW shoot it in my dms lool 😉', 2200);
+    showBottomToast('Copied & saved — now shoot it in my dms loool 😉', 2200);
   }catch(e){
     try{ input.select(); document.execCommand('copy'); showBottomToast('Copied (fallback) & saved — I got your note 😉', 2200); }catch(e2){ showBottomToast('Could not copy, but note was saved locally', 2200); }
   }
