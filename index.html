@@ -3,48 +3,67 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Sneha — The Surprise (Final Fixes)</title>
-<meta name="description" content="Cinematic surprise for Sneha — built by Sameer" />
+<title>Sneha — The Surprise (Gyro-safe, Mobile-ready)</title>
+<meta name="description" content="Surprise for Sneha — built by Sameer (gyro-safe, mobile-friendly)" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Great+Vibes&display=swap');
-  :root{ --bg1:#0f0420; --bg2:#ff6aa3; --accent:#ffd166; --muted:#e6e6ea; --text:#fff; --toast-bg: rgba(0,0,0,0.6);}
-  html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg1),#3b0a4a 40%,var(--bg2));color:var(--text);font-family:Poppins,system-ui,Arial}
+  :root{
+    --bg1:#0f0420; --bg2:#ff6aa3; --accent:#ffd166; --muted:#e6e6ea; --text:#fff;
+    --toast-bg: rgba(0,0,0,0.6);
+    --mobile-toast-bg: rgba(0,0,0,0.75);
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg1),#3b0a4a 40%,var(--bg2));color:var(--text);font-family:Poppins,system-ui,Arial; -webkit-font-smoothing:antialiased}
   *{box-sizing:border-box}
 
-  /* Intro overlay */
-  #introOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(5,5,8,0.78);z-index:9999;padding:18px}
-  #introVideo{width:92%;max-width:980px;border-radius:12px;box-shadow:0 30px 100px rgba(0,0,0,0.6)}
+  /* intro overlay */
+  #introOverlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,5,8,0.78);z-index:9999;padding:18px}
+  #introVideo{width:92%;max-width:900px;border-radius:12px;box-shadow:0 30px 100px rgba(0,0,0,0.6)}
   #enterBtn{margin-top:14px;padding:12px 20px;border-radius:12px;border:0;font-weight:800;background:linear-gradient(90deg,#ff9bbf,var(--accent));color:#000;cursor:pointer}
 
-  /* Layout */
+  /* main layout */
   .wrap{position:relative;min-height:100vh;z-index:1;transition:transform .12s linear}
   .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:36px}
   .logo{font-weight:700;letter-spacing:1px;font-size:13px;color:rgba(255,255,255,0.9)}
   h1.title{font-size:38px;margin:6px 0}
   .sneha{font-family:'Great Vibes',cursive;font-size:56px;color:var(--accent)}
   .subtitle{color:rgba(255,255,255,0.9)}
+
   .portrait{width:380px;height:520px;border-radius:18px;overflow:hidden;border:6px solid rgba(255,255,255,0.06);box-shadow:0 40px 120px rgba(0,0,0,0.45)}
-  .portrait img{width:100%;height:100%;object-fit:cover;cursor:pointer}
+  .portrait img{width:100%;height:100%;object-fit:cover;cursor:pointer;display:block}
+
   .stats-row{display:flex;gap:12px;margin-top:18px;align-items:center}
   .pill{background:linear-gradient(90deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));padding:10px 14px;border-radius:999px;font-weight:700;color:var(--text);backdrop-filter:blur(6px);cursor:pointer}
+
   .content{padding:24px;display:grid;grid-template-columns:1fr 360px;gap:20px}
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 36px rgba(2,6,23,0.45)}
   .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .gallery img{width:100%;height:110px;object-fit:cover;border-radius:10px;cursor:pointer;transition:transform .25s}
   .gallery img:hover{transform:scale(1.04)}
+
   .love-list{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto;margin-top:12px}
   .love-item{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:10px;border-radius:10px;font-weight:600;color:var(--muted)}
+
   .reactions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
   .react-btn{background:rgba(255,255,255,0.06);padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:700}
+
   .lyric-box{position:fixed;left:50%;transform:translateX(-50%);bottom:8%;padding:12px 18px;background:rgba(0,0,0,0.5);border-radius:12px;font-size:18px;z-index:800;display:none}
+
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:opacity .18s;z-index:900}
   .modal-bg.show{visibility:visible;opacity:1}
   .modal{background:linear-gradient(180deg,#11101a,#150823);padding:18px;border-radius:12px;width:94%;max-width:820px;color:var(--muted)}
-  .letter-pane{min-height:120px;border-radius:10px;background:#fff;color:#000;padding:10px}
+
+  .letter-pane{min-height:120px;border-radius:10px;background:#fff;color:#000;padding:10px;display:flex;align-items:center;justify-content:center}
+
   #confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
-  /* toast */
+
+  /* bottom-left mobile toasts (reasons) */
+  .mobile-toast-list{position:fixed;left:12px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:1200}
+  .mobile-toast{background:var(--mobile-toast-bg);color:#fff;padding:10px 12px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.35);font-weight:700;max-width:78vw}
+
+  /* small toast (top-right) */
   .toast{position:fixed;right:18px;top:18px;background:var(--toast-bg);color:#fff;padding:10px 14px;border-radius:10px;z-index:1200;opacity:0;transform:translateY(-8px);transition:opacity .18s,transform .18s}
   .toast.show{opacity:1;transform:translateY(0)}
+
   @media (max-width:980px){ .hero{grid-template-columns:1fr}.portrait{width:100%;height:320px}.content{grid-template-columns:1fr} }
 </style>
 </head>
@@ -54,14 +73,16 @@
 <div id="introOverlay" aria-hidden="false">
   <video id="introVideo" src="/assets/video.mp4" muted playsinline preload="metadata" poster="" crossorigin="anonymous"></video>
   <h2 style="font-family:'Great Vibes',cursive;font-size:56px;color:var(--accent);margin:14px 0 6px">Hey Sneha</h2>
-  <p style="color:rgba(255,255,255,0.92);max-width:900px;text-align:center;margin:0 0 14px">Last night was something really special. Press <strong>Open Surprise</strong> when you're ready — this will also unlock the music and gyro permission on phones.</p>
+  <p style="color:rgba(255,255,255,0.92);max-width:900px;text-align:center;margin:0 0 14px">Last night was something really special. Press <strong>Open Surprise</strong> when you're ready — this will also unlock audio & gyro on phones.</p>
   <button id="enterBtn">Open Surprise</button>
 </div>
 
 <canvas id="confetti"></canvas>
 
-<!-- Toast -->
+<!-- top-right toast -->
 <div id="toast" class="toast" aria-hidden="true"></div>
+<!-- bottom-left mobile toasts stack -->
+<div id="mobileToasts" class="mobile-toast-list" aria-hidden="true"></div>
 
 <div class="wrap" id="appWrap">
   <section class="hero">
@@ -98,6 +119,8 @@
 
     <div>
       <div class="portrait card" id="portrait">
+        <!-- If you want to use external links, replace these srcs with the URL you have.
+             The image loader will accept absolute URLs and will not try to probe local assets when it sees one. -->
         <img id="mainPhoto" src="/assets/photo1.jpg" alt="Sneha portrait">
       </div>
       <div style="margin-top:10px;color:var(--muted);font-size:13px">Tap portrait to cycle photos. Click the little brick bottom-left for a tiny secret.</div>
@@ -132,7 +155,7 @@
         <h3 style="margin:0 0 8px 0">Letters — Handwritten</h3>
         <div style="display:flex;gap:8px;align-items:center">
           <div class="pill" id="prevLetter">◀</div>
-          <div class="letter-pane" id="letterPane"></div>
+          <div class="letter-pane" id="letterPane" aria-hidden="false"></div>
           <div class="pill" id="nextLetter">▶</div>
         </div>
         <div style="margin-top:8px;color:var(--muted);font-size:13px">Handwritten notes draw themselves when shown.</div>
@@ -167,27 +190,40 @@
 </div>
 
 <!-- modal & lego -->
-<div id="modalBg" class="modal-bg" aria-hidden="true"><div class="modal"><button id="closeModal" style="float:right;background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer">✕</button><div id="modalContent"></div></div></div>
-<div id="legoEgg" title="tiny secret" style="position:fixed;left:12px;bottom:14px;z-index:210;opacity:0.06;cursor:pointer"><div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(180deg,#ffd166,#ffb84d);display:flex;align-items:center;justify-content:center">🧱</div></div>
+<div id="modalBg" class="modal-bg" aria-hidden="true">
+  <div class="modal">
+    <button id="closeModal" style="float:right;background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div id="legoEgg" title="tiny secret" style="position:fixed;left:12px;bottom:14px;z-index:210;opacity:0.06;cursor:pointer">
+  <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(180deg,#ffd166,#ffb84d);display:flex;align-items:center;justify-content:center">🧱</div>
+</div>
+
 <div id="lyricBox" class="lyric-box"></div>
 
 <script>
-/* =====================================================
-   Helpers + safe utilities
-   ===================================================== */
+/* ============================
+   Small utilities
+   ============================ */
 const $ = id => document.getElementById(id);
 const qAll = sel => Array.from(document.querySelectorAll(sel));
-const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
-
-function showToast(text, ms=2000){
+const isMobile = /Mobi|Android/i.test(navigator.userAgent || '');
+function showTopToast(txt, ms = 1800){
   const t = $('toast'); if(!t) return;
-  t.textContent = text; t.classList.add('show'); t.setAttribute('aria-hidden','false');
+  t.textContent = txt; t.classList.add('show'); t.setAttribute('aria-hidden','false');
   setTimeout(()=>{ t.classList.remove('show'); t.setAttribute('aria-hidden','true'); }, ms);
 }
+function showMobileToast(txt, ms = 2000){
+  const container = $('mobileToasts'); if(!container) return;
+  const node = document.createElement('div'); node.className = 'mobile-toast'; node.textContent = txt; container.prepend(node); container.setAttribute('aria-hidden','false');
+  setTimeout(()=>{ node.animate([{opacity:1, transform:'translateY(0)'},{opacity:0, transform:'translateY(6px)'}], {duration:300}); setTimeout(()=> node.remove(), 320); }, ms);
+}
 
-/* =====================================================
-   Typewriter & Days counter
-   ===================================================== */
+/* ============================
+   Typewriter + days counter
+   ============================ */
 const START_ISO = '2025-10-20T03:44:00';
 const LOVE_TEXT = `Last night was something really special. I DON'T KNOW HOW IT HAPPENED IN THE MOMENT AND I GENUINELY LOVE THAT. I LOVE YOU SO MUCH SNEH GARG.\n\nWITH LOVE,\nYOUR BOYFRIEND\nSAMEER JHAMB`;
 (function initTypewriter(){
@@ -198,94 +234,97 @@ const LOVE_TEXT = `Last night was something really special. I DON'T KNOW HOW IT 
   updateDays(); setInterval(updateDays, 60*1000);
 })();
 
-/* =====================================================
-   Image loader / probe: tries multiple extensions & cases
-   ===================================================== */
-(function imageProbe(){
+/* ============================
+   Image loader (supports absolute URLs)
+   - Will not aggressively probe if img already has absolute URL
+   - Tries local variants if local filenames are used
+   ============================ */
+(function imageLoader(){
   const baseNames = ['photo1','photo2','photo3','photo4','photo5','photo6'];
   const exts = ['.jpg','.jpeg','.png','.webp'];
   const placeholder = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="100%" height="100%" fill="#2b2230"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#a8a1b2" font-size="24">photo missing</text></svg>`);
 
-  // try to set img src to the first existing variant
-  async function findExisting(pathCandidates){
-    for(const p of pathCandidates){
+  function isAbsolute(u){ try{ return !!(new URL(u)); }catch(e){ return false; } }
+
+  async function findLocalVariant(bn){
+    for(const ext of exts){
+      const p = `/assets/${bn}${ext}`;
       try{
         const res = await fetch(p, { method: 'HEAD' });
         if(res && res.ok) return p;
       }catch(e){
-        // fetch failed (CORS or network) - try to load via Image probe
-        const ok = await probeImage(p);
+        // if fetch CORS fails, fallback to probe via Image
+        const ok = await new Promise(resProbe =>{ const img = new Image(); img.onload = ()=>resProbe(true); img.onerror = ()=>resProbe(false); img.src = p; });
         if(ok) return p;
       }
     }
     return null;
   }
-  function probeImage(url){
-    return new Promise(resolve=>{
-      const img = new Image();
-      img.onload = ()=> resolve(true);
-      img.onerror = ()=> resolve(false);
-      img.src = url;
-    });
-  }
 
-  // for each base name, produce candidate paths (case-insensitive attempts)
   baseNames.forEach(async (bn, idx) => {
-    const candidates = [];
-    for(const ext of exts){
-      candidates.push(`/assets/${bn}${ext}`);
-      candidates.push(`/assets/${bn.toUpperCase()}${ext}`);
-      candidates.push(`/assets/${bn.charAt(0).toUpperCase() + bn.slice(1)}${ext}`);
-    }
-    // try to find one that exists
-    const found = await findExisting(candidates);
-    // apply to gallery and main photo
     const galleryImg = document.querySelectorAll('#gallery img')[idx];
+    // If gallery img has absolute URL (user provided link), respect it and skip probing
+    if(galleryImg && galleryImg.src && isAbsolute(galleryImg.src)){
+      // ok — do nothing
+      if(idx === 0){ const main = $('mainPhoto'); if(main && (!main.src || !isAbsolute(main.src))) main.src = galleryImg.src; }
+      return;
+    }
+    // else probe local variants
+    const found = await findLocalVariant(bn);
     if(found){
       if(galleryImg) galleryImg.src = found;
-      if(idx === 0){
-        const main = $('mainPhoto'); if(main) main.src = found;
-      }
+      if(idx === 0){ const main = $('mainPhoto'); if(main) main.src = found; }
     } else {
-      // not found -> placeholder
       if(galleryImg) galleryImg.src = placeholder;
-      if(idx === 0){
-        const main = $('mainPhoto'); if(main) main.src = placeholder;
-      }
-      console.warn('Image not found for', bn, 'checked', candidates);
+      if(idx === 0){ const main = $('mainPhoto'); if(main) main.src = placeholder; }
+      console.warn('Image not found for', bn, '- tried local assets. If you have remote links, set them directly in the <img> src attributes.');
     }
   });
 })();
 
-/* =====================================================
-   Reasons generator (unique until exhausted) + added cat reason
-   ===================================================== */
+/* ============================
+   Reasons (unique queue) + mobile bottom-left popups
+   ============================ */
 const reasonsFull = [
-  'you','your smile','your personality','your laugh','your sleepy voice','your voice','your face','your body','your jokes','your music taste','your love for diet coke','your love for kinderjoy','your love for me','your love for waffles','your love for pizza','your love for lego flowers','your way of life','your ideologies','your perspectives','you for make me feel like im cared for','you for putting up with me','you for always trying your best','for your patience','your eyes','YOUR EYESSSSSSSSS I LOVE THEM THEY ARE PERFECT','how you rarely give up on your friendships','how you make me want to open up','how pretty you are','how beautiful you are','how stunning you are','how gorgeous you are','how lovely you are','how adorable you are','how cute you are','i love your nose','i love your cheeks','i love everything about you','i love your love with billie eilish','i love your liking of d4vd’s songs','i love your liking of cas’s songs','i love your liking of conan grey’s songs','i love your liking of olivias songs','i love how i make you smile','how you tell me things','how you trust me','how you are my girlfriend','your jealousy','your possessiveness','for being my first ever dandiya partner','for being my first time for holding hands with a girl','for matching fits with me','your dedication','your ability to be super funny sometimes lols','how you ghosted me😝😝','how you un ghosted me🤣😉','how you started saying lols','how you started saying 124','the way you say orange','how you tell me about your dreams','for telling me your lifes story','how you put in efforts','for believing in me','for reading the paragraphs i send','for giving me a reason to smile','for being my first girlfriend','for giving me the privilege of being your boyfriend','for existing','for breathing','for your (maybe)new love for sunflowers😜😜😜😜😜','for being my baby','for being my sweetheart','for being my jaan','for always listening to me','for being my wallpaper','for making me your wallpaper','for making me want to fall in love with you','for giving me a chance','for not ghosting me again😛😛','for being friends with shambhavi cuz if you werent then who knows😛😛','for being my snehaaaaaaaaa','for making me feel SO HAPPPYYY ALWAYS','for making me want to be a better human','for giving me the 1 person i trust the most','for being the best person i met this year','for being able to call you mine','how you somehhoe cut your mouth with a knife while eating the oreo silk i gave','for making me want to open up','for making me want to feel things','for making me cry lol (IN THE BEST WAY POSSIBLE)','hoe you remember stuff about me','how we can be honest with each other','how i FEEL WHILE TALKING TO YOU','how you ALWAYSSSDD LISTEN TO MY JOKES','how you never make me feel sidelines','how you prioritise me 😛😛😛','for being my bestfriend','for being close to me','how you are able to make communicate properly','for giving a person to dedicate this website to','for playing roblox with me','for playing scribl me','for you love of the song the winner takes it all😝😝😝😝','how you always win when we play scribl😉😉','how we try to find roblox games at night','FOR BEING YOU','FOR LOVING THE WAY YOU LOVE','FOR JUST EVERY SINGLE THING','SNEHA GARG I LOVE YOU',
-  'i love ur love for cats' // newly added reason
+  /* long list (same as before) */
+  'you','your smile','your personality','your laugh','your sleepy voice','your voice','your face','your body','your jokes','your music taste','your love for diet coke','your love for kinderjoy','your love for me','your love for waffles','your love for pizza','your love for lego flowers','your way of life','your ideologies','your perspectives','you for make me feel like im cared for','you for putting up with me','you for always trying your best','for your patience','your eyes','YOUR EYESSSSSSSSS I LOVE THEM THEY ARE PERFECT','how you rarely give up on your friendships','how you make me want to open up','how pretty you are','how beautiful you are','how stunning you are','how gorgeous you are','how lovely you are','how adorable you are','how cute you are','i love your nose','i love your cheeks','i love everything about you','i love your love with billie eilish','i love your liking of d4vd’s songs','i love your liking of cas’s songs','i love your liking of conan grey’s songs','i love your liking of olivias songs','i love how i make you smile','how you tell me things','how you trust me','how you are my girlfriend','your jealousy','your possessiveness','for being my first ever dandiya partner','for being my first time for holding hands with a girl','for matching fits with me','your dedication','your ability to be super funny sometimes lols','how you ghosted me😝😝','how you un ghosted me🤣😉','how you started saying lols','how you started saying 124','the way you say orange','how you tell me about your dreams','for telling me your lifes story','how you put in efforts','for believing in me','for reading the paragraphs i send','for giving me a reason to smile','for being my first girlfriend','for giving me the privilege of being your boyfriend','for existing','for breathing','for your (maybe)new love for sunflowers😜😜😜😜😜','for being my baby','for being my sweetheart','for being my jaan','for always listening to me','for being my wallpaper','for making me your wallpaper','for making me want to fall in love with you','for giving me a chance','for not ghosting me again😛😛','for being friends with shambhavi cuz if you werent then who knows😛😛','for being my snehaaaaaaaaa','for making me feel SO HAPPPYYY ALWAYS','for making me want to be a better human','for giving me the 1 person i trust the most','for being the best person i met this year','for being able to call you mine','how you somehhoe cut your mouth with a knife while eating the oreo silk i gave','for making me want to open up','for making me want to feel things','for making me cry lol (IN THE BEST WAY POSSIBLE)','hoe you remember stuff about me','how we can be honest with each other','how i FEEL WHILE TALKING TO YOU','how you ALWAYSSSDD LISTEN TO MY JOKES','how you never make me feel sidelines','how you prioritise me 😛😛😛','for being my bestfriend','for being close to me','how you are able to make communicate properly','for giving a person to dedicate this website to','for playing roblox with me','for playing scribl me','for you love of the song the winner takes it all😝😝😝😝','how you always win when we play scribl😉😉','how we try to find roblox games at night','FOR BEING YOU','FOR LOVING THE WAY YOU LOVE','FOR JUST EVERY SINGLE THING','SNEHA GARG I LOVE YOU','i love ur love for cats'
 ];
-
 function shuffle(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
 let reasonsQueue = shuffle(reasonsFull);
 function nextReason(){ if(reasonsQueue.length===0) reasonsQueue = shuffle(reasonsFull); return reasonsQueue.shift(); }
-function addReason(){ const r = nextReason(); const node = document.createElement('div'); node.className='love-item'; node.textContent = r; const list = $('loveList'); if(list) list.prepend(node); spawnHearts(6); }
-function addThree(){ for(let i=0;i<3;i++) addReason(); fireConfetti(40); }
+
+function presentReason(r){
+  // mobile: show bottom-left toasts
+  if(isMobile){
+    showMobileToast(typeof r === 'string' ? `I love ${r}` : r, 2200);
+  } else {
+    // desktop: prepend to list
+    const el = document.createElement('div'); el.className = 'love-item'; el.textContent = `I love ${r}`; $('loveList').prepend(el);
+  }
+  spawnHearts(4);
+}
+function addReason(){ const r = nextReason(); presentReason(r); }
+function addThree(){ for(let i=0;i<3;i++){ const r= nextReason(); presentReason(r); } fireConfetti(30); }
+
 $('reasonOne') && $('reasonOne').addEventListener('click', addReason);
 $('reasonThree') && $('reasonThree').addEventListener('click', addThree);
 
-/* Show all reasons modal */
+/* ============================
+   Show all reasons modal
+   ============================ */
 $('showAllReasons') && $('showAllReasons').addEventListener('click', ()=>{
-  const modal = $('modalBg'), content = $('modalContent'); if(!modal||!content) return;
+  const modal = $('modalBg'), content = $('modalContent'); if(!modal || !content) return;
   content.innerHTML = '<h3 style="margin-top:0;color:white">All the reasons</h3>';
   const list = document.createElement('div'); list.style.maxHeight='55vh'; list.style.overflow='auto';
   reasonsFull.forEach((r,i)=>{ const d=document.createElement('div'); d.style.padding='8px 0'; d.style.borderBottom='1px solid rgba(255,255,255,0.03)'; d.textContent = `${i+1}. ${r}`; list.appendChild(d); });
   const foot = document.createElement('div'); foot.style.marginTop='12px'; foot.style.color='var(--muted)'; foot.textContent="(couldn't load every single tiny reason here lol)";
   content.appendChild(list); content.appendChild(foot); modal.classList.add('show');
 });
+$('closeModal') && $('closeModal').addEventListener('click', ()=> $('modalBg').classList.remove('show'));
 
-/* =====================================================
-   Gallery modal & portrait cycle
-   ===================================================== */
+/* ============================
+   Gallery modal & portrait
+   ============================ */
 qAll('#gallery img').forEach(img => img.addEventListener('click', ()=>{
   const modal = $('modalBg'), content = $('modalContent'); if(!modal||!content) return;
   content.innerHTML = ''; const big = document.createElement('img'); big.src = img.src; big.style.maxWidth='92%'; big.style.display='block'; big.style.margin='8px auto'; content.appendChild(big); modal.classList.add('show');
@@ -293,83 +332,90 @@ qAll('#gallery img').forEach(img => img.addEventListener('click', ()=>{
 const photos = ['/assets/photo1.jpg','/assets/photo2.jpg','/assets/photo3.jpg','/assets/photo4.jpg','/assets/photo5.jpg','/assets/photo6.jpg'];
 let ph = 0; $('mainPhoto') && $('mainPhoto').addEventListener('click', ()=>{ ph = (ph+1)%photos.length; $('mainPhoto').src = photos[ph]; spawnHearts(6); });
 
-/* =====================================================
-   Send note copy to DM (UX)
-   ===================================================== */
+/* ============================
+   Send note to DM (copy)
+   ============================ */
 $('sendNote') && $('sendNote').addEventListener('click', ()=>{
   const v = $('noteInput') && $('noteInput').value.trim(); if(!v) return alert('Write a short note first');
   const dm = `hey Sneha, check this note I left for you: "${v}" — luv, Sameer`;
-  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(dm).then(()=>showToast('Note copied — paste in DMs 😉',2000)).catch(()=>prompt('Copy this DM text:', dm));
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(dm).then(()=> showTopToast('Note copied — paste in DMs 😉') ).catch(()=> prompt('Copy this DM text:', dm));
   else prompt('Copy this DM text:', dm);
 });
 
-/* =====================================================
-   Handwritten letters (SVG draw)
-   ===================================================== */
-const letters = [
-  `<svg viewBox="0 0 600 120"><path class="hand" d="M10 80 C120 10 200 10 300 80 C380 150 460 20 590 80" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
-  `<svg viewBox="0 0 600 120"><path class="hand" d="M10 70 C120 10 240 20 340 80 C420 140 520 30 590 70" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
-  `<svg viewBox="0 0 600 120"><path class="hand" d="M10 60 C140 10 260 30 380 70 C440 100 520 20 590 60" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`
-];
-let letterIndex = 0;
-function showLetter(i){ const pane = $('letterPane'); if(!pane) return; pane.innerHTML = letters[i]; const path = pane.querySelector('.hand'); if(!path) return; const len = path.getTotalLength ? path.getTotalLength() : 800; path.style.strokeDasharray = len; path.style.strokeDashoffset = len; path.style.transition = 'stroke-dashoffset 2.2s ease-in-out'; requestAnimationFrame(()=> path.style.strokeDashoffset = '0'); }
-$('prevLetter') && $('prevLetter').addEventListener('click', ()=>{ letterIndex = (letterIndex-1+letters.length)%letters.length; showLetter(letterIndex); });
-$('nextLetter') && $('nextLetter').addEventListener('click', ()=>{ letterIndex = (letterIndex+1)%letters.length; showLetter(letterIndex); });
-showLetter(letterIndex);
-
-/* =====================================================
-   Reaction GIFs: cute -> cat gif with 2s toast
-   dance -> working gif
-   ===================================================== */
-function spawnGif(url,x,y){
-  const d = document.createElement('div'); d.style.position='fixed'; d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.width = '160px'; d.style.height = '160px'; d.style.zIndex = 1200; d.style.pointerEvents='none';
-  d.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.6)"/>`;
-  document.body.appendChild(d);
-  d.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:'translateY(-120px) scale(.6)',opacity:0}],{duration:2200,easing:'cubic-bezier(.2,.9,.2,1)'});
-  setTimeout(()=>d.remove(),2300);
+/* ============================
+   Handwritten SVG note (I LOVE YOU SNEHA GARG YOU ARE MINE)
+   - implemented as text using Great Vibes reveal via clip-path animation
+   ============================ */
+const handwritingSVG = `
+  <svg viewBox="0 0 900 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+    <defs>
+      <style>
+        .g { font-family: 'Great Vibes', cursive; font-size:40px; fill:none; stroke:#000; stroke-width:2; }
+        .reveal { animation: reveal 2600ms linear forwards; }
+        @keyframes reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0% 0 0); } }
+      </style>
+    </defs>
+    <text x="10" y="60" class="g reveal">I LOVE YOU SNEHA GARG YOU ARE MINE</text>
+  </svg>
+`;
+function showLetter(index = 0){
+  const pane = $('letterPane'); if(!pane) return;
+  pane.innerHTML = handwritingSVG;
 }
-document.getElementById('cuteBtn') && document.getElementById('cuteBtn').addEventListener('click', (e)=> {
-  const gif = e.currentTarget.dataset.gif;
-  spawnGif(gif, (e.clientX || window.innerWidth/2)-80, (e.clientY || window.innerHeight/2)-80);
-  showToast('meow! 🐱', 1900); fireConfetti(18);
-});
-document.getElementById('danceBtn') && document.getElementById('danceBtn').addEventListener('click', (e)=>{
-  const gif = e.currentTarget.dataset.gif;
-  spawnGif(gif, (e.clientX || window.innerWidth/2)-80, (e.clientY || window.innerHeight/2)-80);
-  showToast('let\'s dance 💃', 1400); fireConfetti(12);
-});
-document.getElementById('loveBtn') && document.getElementById('loveBtn').addEventListener('click', (e)=>{
-  const gif = e.currentTarget.dataset.gif;
-  spawnGif(gif, (e.clientX || window.innerWidth/2)-80, (e.clientY || window.innerHeight/2)-80);
-  showToast('❤️', 1200); fireConfetti(14);
-});
+$('prevLetter') && $('prevLetter').addEventListener('click', ()=> showLetter(0));
+$('nextLetter') && $('nextLetter').addEventListener('click', ()=> showLetter(0));
+showLetter(0);
 
-/* =====================================================
-   Floating hearts on clicks
-   ===================================================== */
-document.addEventListener('click', (ev)=>{ spawnHeartAt(ev.clientX, ev.clientY); });
-function spawnHeartAt(x,y){ const e=document.createElement('div'); e.textContent='💖'; e.style.position='fixed'; e.style.left=(x-12)+'px'; e.style.top=(y-12)+'px'; e.style.zIndex=1100; e.style.fontSize='20px'; e.style.pointerEvents='none'; document.body.appendChild(e); const d=900+Math.random()*900; e.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:`translateY(-${80+Math.random()*160}px) scale(.4)`,opacity:0}],{duration:d,easing:'cubic-bezier(.2,.9,.2,1)'}); setTimeout(()=>e.remove(), d+60); }
+/* ============================
+   Reactions: cat toast + GIF + confetti
+   ============================ */
+function spawnGif(url,x,y){ const d=document.createElement('div'); d.style.position='fixed'; d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.width = '160px'; d.style.height = '160px'; d.style.zIndex = 1200; d.style.pointerEvents='none'; d.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.6)"/>`; document.body.appendChild(d); d.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:'translateY(-120px) scale(.6)',opacity:0}],{duration:2200,easing:'cubic-bezier(.2,.9,.2,1)'}); setTimeout(()=>d.remove(),2300); }
+const cuteBtn = $('cuteBtn'), danceBtn = $('danceBtn'), loveBtn = $('loveBtn');
+cuteBtn && cuteBtn.addEventListener('click', (e)=>{ const gif = e.currentTarget.dataset.gif; spawnGif(gif, (e.clientX||window.innerWidth/2)-80, (e.clientY||window.innerHeight/2)-80); if(isMobile) showMobileToast('lumo u n me when 🐱', 1900); else showTopToast('lumo u n me when 🐱', 1500); fireConfetti(18); });
+danceBtn && danceBtn.addEventListener('click', (e)=>{ const gif = e.currentTarget.dataset.gif; spawnGif(gif, (e.clientX||window.innerWidth/2)-80, (e.clientY||window.innerHeight/2)-80); if(isMobile) showMobileToast('let\'s dance 💃',1400); else showTopToast('let\'s dance 💃',1200); fireConfetti(12); });
+loveBtn && loveBtn.addEventListener('click', (e)=>{ const gif = e.currentTarget.dataset.gif; spawnGif(gif, (e.clientX||window.innerWidth/2)-80, (e.clientY||window.innerHeight/2)-80); if(isMobile) showMobileToast('❤️',1100); else showTopToast('❤️',900); fireConfetti(14); });
+
+/* ============================
+   Floating hearts
+   ============================ */
+document.addEventListener('click', (ev)=>{ // always spawn small heart for delight
+  // but ignore clicks originating from the mobile toast area to avoid spam
+  if(ev.target && ev.target.closest && ev.target.closest('.mobile-toast')) return;
+  spawnHeartAt(ev.clientX, ev.clientY);
+});
+function spawnHeartAt(x,y){ const e=document.createElement('div'); e.textContent='💖'; e.style.position='fixed'; e.style.left=(x-12)+'px'; e.style.top=(y-12)+'px'; e.style.zIndex=1100; e.style.fontSize='20px'; e.style.pointerEvents='none'; document.body.appendChild(e); const d = 900 + Math.random()*900; e.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:`translateY(-${80+Math.random()*160}px) scale(.4)`,opacity:0}],{duration:d,easing:'cubic-bezier(.2,.9,.2,1)'}); setTimeout(()=> e.remove(), d+60); }
 function spawnHearts(n=8){ for(let i=0;i<n;i++) spawnHeartAt(window.innerWidth*(0.25+Math.random()*0.5), window.innerHeight*(0.25+Math.random()*0.5)); }
 
-/* =====================================================
-   Confetti (canvas) - fixed names and safe init
-   ===================================================== */
+/* ============================
+   Confetti (canvas) — safe names
+   ============================ */
 const confCanvas = $('confetti'); const confCtx = confCanvas ? confCanvas.getContext('2d') : null;
-let W = confCanvas ? confCanvas.width = innerWidth : 0; let H = confCanvas ? confCanvas.height = innerHeight : 0;
-window.addEventListener('resize', ()=>{ if(confCanvas){ W=confCanvas.width=innerWidth; H=confCanvas.height=innerHeight; }});
+let W = confCanvas ? confCanvas.width = innerWidth : 0;
+let H = confCanvas ? confCanvas.height = innerHeight : 0;
+window.addEventListener('resize', ()=>{ if(confCanvas){ W = confCanvas.width = innerWidth; H = confCanvas.height = innerHeight; }});
 function rand(min,max){ return Math.random()*(max-min)+min; }
 let confettiParts = [];
-class Confetto { constructor(){ this.x = rand(0,W); this.y = rand(-H,0); this.size = rand(6,14); this.color = `hsl(${Math.floor(rand(0,360))}deg 70% 60%)`; this.vx = rand(-2,2); this.vy = rand(2,6); } update(){ this.x += this.vx; this.y += this.vy; this.vy *= 0.998; } draw(){ if(!confCtx) return; confCtx.fillStyle = this.color; confCtx.fillRect(this.x,this.y,this.size,this.size*0.6); } }
+class Confetto {
+  constructor(){ this.x = rand(0,W); this.y = rand(-H,0); this.size = rand(6,14); this.color = `hsl(${Math.floor(rand(0,360))}deg 70% 60%)`; this.vx = rand(-2,2); this.vy = rand(2,6); }
+  update(){ this.x += this.vx; this.y += this.vy; this.vy *= 0.998; }
+  draw(){ if(!confCtx) return; confCtx.fillStyle = this.color; confCtx.fillRect(this.x,this.y,this.size,this.size*0.6); }
+}
 function renderConf(){ if(!confCtx) return; confCtx.clearRect(0,0,W,H); for(const p of confettiParts){ p.update(); p.draw(); } confettiParts = confettiParts.filter(p=> p.y < H + 60); }
-function fireConfetti(n=80){ if(!confCanvas || !confCtx) return; for(let i=0;i<n;i++) confettiParts.push(new Confetto()); if(!window._confettiInt){ window._confettiInt = setInterval(renderConf,1000/60); setTimeout(()=>{ clearInterval(window._confettiInt); window._confettiInt=null; confettiParts=[]; if(confCtx) confCtx.clearRect(0,0,W,H); },5000); } }
+function fireConfetti(n=80){
+  if(!confCanvas || !confCtx) return;
+  for(let i=0;i<n;i++) confettiParts.push(new Confetto());
+  if(!window._confettiInt){
+    window._confettiInt = setInterval(renderConf, 1000/60);
+    setTimeout(()=>{ clearInterval(window._confettiInt); window._confettiInt = null; confettiParts = []; if(confCtx) confCtx.clearRect(0,0,W,H); }, 5000);
+  }
+}
 function createFireworks(q=6){ for(let i=0;i<q;i++){ for(let j=0;j<12;j++){ const s=document.createElement('div'); s.style.position='fixed'; s.style.left=(30+Math.random()*40)+'%'; s.style.top=(30+Math.random()*40)+'%'; s.style.width='6px'; s.style.height='6px'; s.style.borderRadius='50%'; s.style.background='white'; s.style.zIndex=980; document.body.appendChild(s); const dur=700+Math.random()*900; s.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:`translateY(-${60+Math.random()*120}px) scale(.1)`,opacity:0}],{duration:dur}); setTimeout(()=>s.remove(), dur+80); } } }
 
-/* =====================================================
-   Audio: local song.mp3 (preferred) with WebAudio analysis,
-   fallback to YouTube iframe if local missing or blocked
-   ===================================================== */
+/* ============================
+   Audio: local (song.mp3) preferred, WebAudio analysis for pulse
+   ============================ */
 const localAudio = $('localAudio');
-let audioCtx=null, analyser=null, sourceNode=null, dataArray=null, bufferLength=0;
+let audioCtx = null, analyser = null, sourceNode = null, dataArray = null, bufferLength = 0;
 function initLocalAudioAnalysis(){
   if(!localAudio) return false;
   try{
@@ -380,13 +426,19 @@ function initLocalAudioAnalysis(){
     sourceNode.connect(analyser); analyser.connect(audioCtx.destination);
     (function loop(){ if(!analyser) return; analyser.getByteFrequencyData(dataArray); let sum=0; for(let i=0;i<dataArray.length;i++) sum += dataArray[i]*dataArray[i]; const rms = Math.sqrt(sum / dataArray.length) / 255; applyAudioPulse(rms); requestAnimationFrame(loop); })();
     return true;
-  }catch(e){ console.warn('local audio analysis init failed', e); return false; }
+  }catch(e){ console.warn('Local audio analysis init failed', e); return false; }
 }
 let lastPulse = 0;
-function applyAudioPulse(level){ document.body.style.filter = `saturate(${1 + level*0.2})`; const now = performance.now(); if(level > 0.35 && (now - lastPulse > 700)){ fireConfetti(18); spawnHearts(10); lastPulse = now; } }
+function applyAudioPulse(level){
+  document.body.style.filter = `saturate(${1 + level*0.16})`;
+  const now = performance.now();
+  if(level > 0.36 && (now - lastPulse > 700)){ fireConfetti(16); spawnHearts(8); lastPulse = now; }
+}
 
-/* ---------- YouTube fallback ---------- */
-let ytPlayer=null;
+/* ============================
+   YouTube fallback
+   ============================ */
+let ytPlayer = null;
 const YT_ID = 'iggmiF7DNoM';
 (function loadYT(){
   if(window.YT && window.YT.Player){ initYT(); return; }
@@ -396,30 +448,166 @@ const YT_ID = 'iggmiF7DNoM';
 function initYT(){
   const wrap = $('ytPlayerWrap'); if(!wrap) return;
   const div = document.createElement('div'); div.id = 'ytPlayer'; wrap.appendChild(div);
-  ytPlayer = new YT.Player('ytPlayer', {
-    height: '180', width: '320', videoId: YT_ID,
-    playerVars: { controls: 1, modestbranding: 1, rel: 0 }
-  });
+  ytPlayer = new YT.Player('ytPlayer', { height: '180', width: '320', videoId: YT_ID, playerVars: { controls:1, modestbranding:1, rel:0 } });
 }
 
-/* Unified play function (user gesture must call) */
+/* Unified play function — user gesture required */
 async function playMusic(){
-  // prefer local if available and loaded
   if(localAudio && localAudio.src){
     try{
       if(!audioCtx) initLocalAudioAnalysis();
       await localAudio.play();
       return 'local';
-    }catch(err){ console.warn('localAudio play failed', err); }
+    }catch(e){ console.warn('local play failed', e); }
   }
-  if(ytPlayer && ytPlayer.playVideo){ try{ ytPlayer.seekTo(0); ytPlayer.playVideo(); return 'yt'; }catch(e){ console.warn('yt play failed', e); } }
+  if(ytPlayer && ytPlayer.playVideo){
+    try{ ytPlayer.seekTo(0); ytPlayer.playVideo(); return 'yt'; } catch(e){ console.warn('yt play failed', e); }
+  }
   return null;
 }
 
-/* lyric sync scaffold */
-let lyricMode=false, lyricIntervalId=null;
+/* Lyric scaffold (unchanged) */
+let lyricMode = false, lyricIntervalId = null;
 $('lyricToggle') && $('lyricToggle').addEventListener('click', ()=>{ lyricMode = !lyricMode; $('lyricToggle').textContent = `Lyric mode: ${lyricMode? 'on':'off'}`; if(!lyricMode) $('lyricBox').style.display='none'; });
-const lyricsArray = []; // fill as [sec, "line"] to use lyric sync
+const lyricsArray = []; // fill with [sec, "line"]
+function startLyricSync(getTimeFn){
+  if(!getTimeFn) return null;
+  if(lyricIntervalId) clearInterval(lyricIntervalId);
+  const box = $('lyricBox'); box.style.display = lyricMode ? 'block' : 'none';
+  return setInterval(()=>{ if(!lyricMode) return; const t = Math.floor(getTimeFn()); let current=''; for(let i=0;i<lyricsArray.length;i++){ if(t >= Math.floor(lyricsArray[i][0])) current = lyricsArray[i][1]; else break;} if(current){ box.textContent = current; box.style.display='block'; } else box.style.display='none'; }, 300);
+}
+
+/* ============================
+   Gyro (safe): calibration + low sensitivity + smoothing + deadzone
+   - calibrates baseline on first gesture
+   - uses low-pass filter (alpha) to smooth
+   - clamps to small translate values
+   ============================ */
+let gyroCalibrated = false;
+let baselineGamma = 0, baselineBeta = 0;
+let gyroX = 0, gyroY = 0; // smoothed orientation-derived target
+const gyroAlpha = 0.06; // smoothing factor (lower => smoother/slower)
+const gyroDeadzone = 3; // degrees — ignore tiny tilts
+const gyroMaxTranslate = 6; // px — VERY small to avoid layout shifts
+
+function calibrateGyro(initial) {
+  baselineGamma = initial.gamma || 0;
+  baselineBeta = initial.beta || 0;
+  gyroCalibrated = true;
+  console.log('Gyro calibrated baseline', baselineGamma.toFixed(2), baselineBeta.toFixed(2));
+}
+
+function handleDeviceOrientation(e){
+  if(!e) return;
+  // If values are null/undefined, bail
+  const gamma = (e.gamma !== null && e.gamma !== undefined) ? e.gamma : 0; // left-right
+  const beta = (e.beta !== null && e.beta !== undefined) ? e.beta : 0;   // front-back
+
+  if(!gyroCalibrated){
+    // calibrate only on a stable reading (use small threshold)
+    calibrateGyro({gamma, beta});
+  }
+
+  // compute delta from baseline
+  let dx = gamma - baselineGamma; // degrees
+  let dy = beta - baselineBeta;
+
+  // deadzone
+  if(Math.abs(dx) < gyroDeadzone) dx = 0;
+  if(Math.abs(dy) < gyroDeadzone) dy = 0;
+
+  // map degrees to normalized -1..1 with safe factor, keep gentle sensitivity
+  // dividing by 40 gives very gentle movement; clamp to [-1,1]
+  const nx = Math.max(-1, Math.min(1, dx / 40));
+  const ny = Math.max(-1, Math.min(1, dy / 40));
+
+  // scale to small translation
+  const targetFromGyroX = -nx * gyroMaxTranslate;
+  const targetFromGyroY = -ny * gyroMaxTranslate;
+
+  // low-pass smoothing into gyroX/Y
+  gyroX += (targetFromGyroX - gyroX) * gyroAlpha;
+  gyroY += (targetFromGyroY - gyroY) * gyroAlpha;
+
+  // these values will be combined with mouse target in RAF loop (see below)
+}
+
+/* bind deviceorientation safely (permission handled elsewhere) */
+function safeAddDeviceOrientationListener(){
+  if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    // iOS 13+ flow: request permission on user gesture elsewhere (we call request in open action)
+    DeviceOrientationEvent.requestPermission().then(state=>{
+      if(state === 'granted'){
+        window.addEventListener('deviceorientation', handleDeviceOrientation, {passive:true});
+        showTopToast('Gyro enabled', 1200);
+      } else console.warn('deviceorientation permission denied');
+    }).catch(err => console.warn('deviceorientation request error', err));
+  } else {
+    window.addEventListener('deviceorientation', handleDeviceOrientation, {passive:true});
+  }
+}
+
+/* ============================
+   Combined RAF loop (mouse + gyro) — small transforms only
+   ============================ */
+const appWrap = $('appWrap');
+let mouseTargetX = 0, mouseTargetY = 0;
+let combinedX = 0, combinedY = 0;
+const rafEase = 0.09; // smoothing for combined transform
+const mouseMax = 8;   // slightly larger for mouse but still small
+
+function onMouseMove(e){
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  const dx = (e.clientX - cx) / cx; // -1..1
+  const dy = (e.clientY - cy) / cy;
+  mouseTargetX = -dx * mouseMax;
+  mouseTargetY = -dy * mouseMax;
+}
+
+window.addEventListener('mousemove', onMouseMove, {passive:true});
+
+// RAF: combine mouseTarget + gyroX/gyroY with clamps and smooth
+function rafUpdate(){
+  // compute combined target (weighted)
+  const targetX = (mouseTargetX * 0.7) + (gyroX * 0.3);
+  const targetY = (mouseTargetY * 0.7) + (gyroY * 0.3);
+
+  combinedX += (targetX - combinedX) * rafEase;
+  combinedY += (targetY - combinedY) * rafEase;
+
+  // clamp to tiny translation to avoid layout issues
+  const finalX = Math.max(-18, Math.min(18, combinedX));
+  const finalY = Math.max(-18, Math.min(18, combinedY));
+
+  if(appWrap) appWrap.style.transform = `translate3d(${finalX}px, ${finalY}px, 0)`;
+  requestAnimationFrame(rafUpdate);
+}
+requestAnimationFrame(rafUpdate);
+
+/* Ensure deviceorientation listener is requested only after a user gesture */
+function enableGyroPermissionFlow(){
+  // only run once
+  if(window._gyroPermissionRequested) return;
+  window._gyroPermissionRequested = true;
+  safeAddDeviceOrientationListener();
+}
+window.addEventListener('click', enableGyroPermissionFlow, { once: true, passive:true });
+window.addEventListener('touchstart', enableGyroPermissionFlow, { once: true, passive:true });
+
+/* ============================
+   Video load check (warn if missing)
+   ============================ */
+(function checkVideo(){
+  const v = $('introVideo'); if(!v) return;
+  v.addEventListener('error', ()=>{ console.warn('Intro video failed to load: /assets/video.mp4'); showTopToast('Intro video not found — check /assets/video.mp4',2200); });
+  v.load();
+})();
+
+/* ============================
+   Audio play + lyric scaffolding + Open Surprise gesture
+   ============================ */
+let lyricIntervalId = null;
 function startLyricSync(getTimeFn){
   if(!getTimeFn) return null;
   if(lyricIntervalId) clearInterval(lyricIntervalId);
@@ -427,85 +615,54 @@ function startLyricSync(getTimeFn){
   return setInterval(()=>{ if(!lyricMode) return; const t = Math.floor(getTimeFn()); let current=''; for(let i=0;i<lyricsArray.length;i++){ if(t >= Math.floor(lyricsArray[i][0])) current = lyricsArray[i][1]; else break; } if(current){ box.textContent = current; box.style.display='block'; } else box.style.display='none'; }, 300);
 }
 
-/* =====================================================
-   Open Surprise: user gesture that starts music & gyro permission
-   ===================================================== */
-function tryEnableDeviceOrientation(){
-  if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
-    DeviceOrientationEvent.requestPermission().then(permissionState => {
-      if(permissionState === 'granted'){ window.addEventListener('deviceorientation', onOrientation, {passive:true}); showToast('Gyro enabled', 1500); }
-      else console.warn('Device orientation permission denied');
-    }).catch(err => console.warn('DeviceOrientation request failed', err));
-  } else {
-    window.addEventListener('deviceorientation', onOrientation, {passive:true});
-  }
-}
 $('enterBtn') && $('enterBtn').addEventListener('click', async ()=>{
-  $('introOverlay') && ($('introOverlay').style.display='none');
-  // request gyro on first gesture
-  tryEnableDeviceOrientation();
-  // attempt play
-  const which = await playMusic();
-  if(which === 'local'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> localAudio.currentTime); showToast('Playing local song', 1400); }
-  else if(which === 'yt'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0); showToast('Playing via YouTube', 1400); }
-  else showToast('No audio found — try uploading song.mp3 or check YouTube fallback', 2200);
+  $('introOverlay') && ($('introOverlay').style.display = 'none');
+  // Request gyro permission on iOS, enabled via enableGyroPermissionFlow earlier; request explicitly here too for safety
+  try{ if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){ DeviceOrientationEvent.requestPermission().then(s => { if(s === 'granted'){ window.addEventListener('deviceorientation', handleDeviceOrientation, {passive:true}); showTopToast('Gyro enabled',1200); } }); } }catch(e){ /* ignore */ }
+
+  // Try to play local audio; if not available, fallback to YT
+  const which = await (async ()=>{
+    // try local
+    if(localAudio && localAudio.src){
+      try{ if(!audioCtx) initLocalAudioAnalysis(); await localAudio.play(); return 'local'; }catch(e){ console.warn('local audio play failed', e); }
+    }
+    // else ensure ytPlayer inited and play
+    if(window.YT && ytPlayer && ytPlayer.playVideo){ try{ ytPlayer.seekTo(0); ytPlayer.playVideo(); return 'yt'; }catch(e){ console.warn('yt fail', e); } }
+    return null;
+  })();
+
+  if(which === 'local'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> localAudio.currentTime); showTopToast('Playing local song',1400); }
+  else if(which === 'yt'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0); showTopToast('Playing via YouTube',1400); }
+  else showTopToast('No audio found — upload song.mp3 or rely on YouTube fallback',2200);
+
+  // celebration
   spawnHearts(24); fireConfetti(140); createFireworks(10);
 });
-$('openSurpriseInline') && $('openSurpriseInline').addEventListener('click', ()=> $('enterBtn').click());
-$('playSongBtn') && $('playSongBtn').addEventListener('click', async ()=>{ const which = await playMusic(); if(which === 'local'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> localAudio.currentTime); showToast('Playing local song',1200); } else { if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0); showToast('Playing via YouTube',1200); } });
 
-/* Celebrate */
-$('celebrateBtn') && $('celebrateBtn').addEventListener('click', ()=>{ spawnHearts(40); fireConfetti(220); createFireworks(14); });
+/* playSongBtn simple binding */
+$('playSongBtn') && $('playSongBtn').addEventListener('click', async ()=>{
+  const result = await playMusic();
+  if(result === 'local'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> localAudio.currentTime); showTopToast('Playing local song',1200); }
+  else if(result === 'yt'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0); showTopToast('Playing via YouTube',1200); }
+  else showTopToast('Could not play audio',1600);
+});
 
-/* =====================================================
-   Parallax: mouse + gyro combined (smooth lerp)
-   ===================================================== */
-const appWrap = $('appWrap');
-let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
-const maxTranslate = 18, ease = 0.12;
-function onMouse(e){ const cx = window.innerWidth/2, cy = window.innerHeight/2; const dx = (e.clientX - cx)/cx; const dy = (e.clientY - cy)/cy; targetX = -dx * maxTranslate; targetY = -dy * maxTranslate; }
-function onOrientation(ev){ const gamma = ev.gamma || 0, beta = ev.beta || 0; const nx = clamp(gamma/30, -1, 1), ny = clamp(beta/30, -1, 1); targetX = targetX + (-nx * maxTranslate * 0.9); targetY = targetY + (ny * maxTranslate * 0.9); }
-function rafLoop(){ currentX += (targetX - currentX) * ease; currentY += (targetY - currentY) * ease; if(appWrap) appWrap.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`; requestAnimationFrame(rafLoop); }
-window.addEventListener('mousemove', onMouse, {passive:true});
-// request gyro permission on first gesture if needed
-function bindGyroOnce(){ window.removeEventListener('touchstart', bindGyroOnce); window.removeEventListener('click', bindGyroOnce); tryEnableDeviceOrientation(); }
-window.addEventListener('touchstart', bindGyroOnce, {passive:true}); window.addEventListener('click', bindGyroOnce, {passive:true});
-requestAnimationFrame(rafLoop);
-
-/* =====================================================
-   Modal close BG
-   ===================================================== */
+/* ============================
+   Misc: modal close, lego egg, initial flourish
+   ============================ */
 $('modalBg') && $('modalBg').addEventListener('click', (e)=>{ if(e.target === $('modalBg')) $('modalBg').classList.remove('show'); });
 $('closeModal') && $('closeModal').addEventListener('click', ()=> $('modalBg').classList.remove('show'));
 
-/* =====================================================
-   Lego egg (tiny secret)
-   ===================================================== */
 (function legoEgg(){
   const egg = $('legoEgg'); if(!egg) return; let clicks=0;
-  egg.addEventListener('click', ()=>{
-    clicks++; egg.style.opacity = 0.28;
-    if(clicks>=3){
-      const m = $('modalBg'), c = $('modalContent'); if(!m||!c) return;
-      c.innerHTML = `<h3 style="margin-top:0;color:white">Tiny Lego Flowers 🌼</h3><p style="color:var(--muted)">hey love hope you loved the flowers</p><div style="display:flex;gap:8px;justify-content:center;margin-top:12px">` + Array.from({length:5}).map((_,i)=>`<div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,hsl(${i*60} 80% 60%), hsl(${i*60} 80% 50%));">🌸</div>`).join('') + `</div>`;
-      m.classList.add('show'); spawnHearts(28); fireConfetti(120); clicks=0;
-    }
-  });
+  egg.addEventListener('click', ()=>{ clicks++; egg.style.opacity = 0.28; if(clicks>=3){ const m = $('modalBg'), c = $('modalContent'); if(!m||!c) return; c.innerHTML = `<h3 style="margin-top:0;color:white">Tiny Lego Flowers 🌼</h3><p style="color:var(--muted)">hey love hope you loved the flowers</p><div style="display:flex;gap:8px;justify-content:center;margin-top:12px">` + Array.from({length:5}).map((_,i)=>`<div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,hsl(${i*60} 80% 60%), hsl(${i*60} 80% 50%));">🌸</div>`).join('') + `</div>`; m.classList.add('show'); spawnHearts(28); fireConfetti(120); clicks=0; } });
 })();
 
-/* initial flourish */
 setTimeout(()=> spawnHearts(8), 900);
 
-/* =====================================================
-   Safe video load check (console warning if missing)
-   ===================================================== */
-(function checkVideo(){
-  const v = $('introVideo'); if(!v) return;
-  v.addEventListener('error', ()=>{ console.warn('Intro video failed to load: /assets/video.mp4'); showToast('Intro video not found — check /assets/video.mp4',2200); });
-  // attempt to set muted autoplay preview (will not play without user gesture on many browsers)
-  v.load();
-})();
-
+/* ============================
+   End of script
+   ============================ */
 </script>
 </body>
 </html>
