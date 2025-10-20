@@ -3,18 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Sneha — The Surprise (Final)</title>
+<title>Sneha — The Surprise (Final Fixes)</title>
 <meta name="description" content="Cinematic surprise for Sneha — built by Sameer" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Great+Vibes&display=swap');
-  :root{ --bg1:#0f0420; --bg2:#ff6aa3; --accent:#ffd166; --muted:#e6e6ea; --text:#fff; }
+  :root{ --bg1:#0f0420; --bg2:#ff6aa3; --accent:#ffd166; --muted:#e6e6ea; --text:#fff; --toast-bg: rgba(0,0,0,0.6);}
   html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg1),#3b0a4a 40%,var(--bg2));color:var(--text);font-family:Poppins,system-ui,Arial}
   *{box-sizing:border-box}
-  /* Intro */
-  #introOverlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,5,8,0.78);z-index:9999;padding:18px}
+
+  /* Intro overlay */
+  #introOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(5,5,8,0.78);z-index:9999;padding:18px}
   #introVideo{width:92%;max-width:980px;border-radius:12px;box-shadow:0 30px 100px rgba(0,0,0,0.6)}
   #enterBtn{margin-top:14px;padding:12px 20px;border-radius:12px;border:0;font-weight:800;background:linear-gradient(90deg,#ff9bbf,var(--accent));color:#000;cursor:pointer}
-  /* layout */
+
+  /* Layout */
   .wrap{position:relative;min-height:100vh;z-index:1;transition:transform .12s linear}
   .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:36px}
   .logo{font-weight:700;letter-spacing:1px;font-size:13px;color:rgba(255,255,255,0.9)}
@@ -40,12 +42,15 @@
   .modal{background:linear-gradient(180deg,#11101a,#150823);padding:18px;border-radius:12px;width:94%;max-width:820px;color:var(--muted)}
   .letter-pane{min-height:120px;border-radius:10px;background:#fff;color:#000;padding:10px}
   #confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+  /* toast */
+  .toast{position:fixed;right:18px;top:18px;background:var(--toast-bg);color:#fff;padding:10px 14px;border-radius:10px;z-index:1200;opacity:0;transform:translateY(-8px);transition:opacity .18s,transform .18s}
+  .toast.show{opacity:1;transform:translateY(0)}
   @media (max-width:980px){ .hero{grid-template-columns:1fr}.portrait{width:100%;height:320px}.content{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
 
-<!-- Intro overlay with video -->
+<!-- Intro overlay -->
 <div id="introOverlay" aria-hidden="false">
   <video id="introVideo" src="/assets/video.mp4" muted playsinline preload="metadata" poster="" crossorigin="anonymous"></video>
   <h2 style="font-family:'Great Vibes',cursive;font-size:56px;color:var(--accent);margin:14px 0 6px">Hey Sneha</h2>
@@ -54,6 +59,9 @@
 </div>
 
 <canvas id="confetti"></canvas>
+
+<!-- Toast -->
+<div id="toast" class="toast" aria-hidden="true"></div>
 
 <div class="wrap" id="appWrap">
   <section class="hero">
@@ -81,9 +89,9 @@
       <div class="card" style="margin-top:12px">
         <strong>Reactions</strong>
         <div class="reactions" id="reactionButtons">
-          <div class="react-btn" data-gif="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif">Cute</div>
-          <div class="react-btn" data-gif="https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif">Love</div>
-          <div class="react-btn" data-gif="https://media.giphy.com/media/1kA3b8xqV1rX2/giphy.gif">Dance</div>
+          <div class="react-btn" id="cuteBtn" data-gif="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif">Cute</div>
+          <div class="react-btn" id="loveBtn" data-gif="https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif">Love</div>
+          <div class="react-btn" id="danceBtn" data-gif="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif">Dance</div>
         </div>
       </div>
     </div>
@@ -101,12 +109,12 @@
       <div class="card">
         <h3 style="margin:0 0 8px 0">Memories & Gallery</h3>
         <div class="gallery" id="gallery">
-          <img src="./assets/photo1.jpg" alt="">
-          <img src="./assets/photo2.jpg" alt="">
-          <img src="./assets/photo3.jpg" alt="">
-          <img src="./assets/photo4.jpg" alt="">
-          <img src="./assets/photo5.jpg" alt="">
-          <img src="./assets/photo6.jpg" alt="">
+          <img src="/assets/photo1.jpg" alt="">
+          <img src="/assets/photo2.jpg" alt="">
+          <img src="/assets/photo3.jpg" alt="">
+          <img src="/assets/photo4.jpg" alt="">
+          <img src="/assets/photo5.jpg" alt="">
+          <img src="/assets/photo6.jpg" alt="">
         </div>
         <div style="margin-top:8px;color:var(--muted);font-size:13px">Click a photo to view it larger.</div>
       </div>
@@ -164,15 +172,25 @@
 <div id="lyricBox" class="lyric-box"></div>
 
 <script>
-/* ---------- Small helpers ---------- */
+/* =====================================================
+   Helpers + safe utilities
+   ===================================================== */
 const $ = id => document.getElementById(id);
 const qAll = sel => Array.from(document.querySelectorAll(sel));
 const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 
-/* ---------- Typewriter + days ---------- */
+function showToast(text, ms=2000){
+  const t = $('toast'); if(!t) return;
+  t.textContent = text; t.classList.add('show'); t.setAttribute('aria-hidden','false');
+  setTimeout(()=>{ t.classList.remove('show'); t.setAttribute('aria-hidden','true'); }, ms);
+}
+
+/* =====================================================
+   Typewriter & Days counter
+   ===================================================== */
 const START_ISO = '2025-10-20T03:44:00';
 const LOVE_TEXT = `Last night was something really special. I DON'T KNOW HOW IT HAPPENED IN THE MOMENT AND I GENUINELY LOVE THAT. I LOVE YOU SO MUCH SNEH GARG.\n\nWITH LOVE,\nYOUR BOYFRIEND\nSAMEER JHAMB`;
-(function(){
+(function initTypewriter(){
   const tw = $('typewriter');
   if(tw){ let i=0; function step(){ tw.textContent = LOVE_TEXT.slice(0,i); i++; if(i<=LOVE_TEXT.length) setTimeout(step, 16 + Math.random()*22); } setTimeout(step,700); }
   const start = new Date(START_ISO);
@@ -180,42 +198,73 @@ const LOVE_TEXT = `Last night was something really special. I DON'T KNOW HOW IT 
   updateDays(); setInterval(updateDays, 60*1000);
 })();
 
-/* ---------- Image guard: probe expected images and fallback ---------- */
-(function imageGuard(){
-  const expected = ['/assets/photo1.jpg','/assets/photo2.jpg','/assets/photo3.jpg','/assets/photo4.jpg','/assets/photo5.jpg','/assets/photo6.jpg'];
+/* =====================================================
+   Image loader / probe: tries multiple extensions & cases
+   ===================================================== */
+(function imageProbe(){
+  const baseNames = ['photo1','photo2','photo3','photo4','photo5','photo6'];
+  const exts = ['.jpg','.jpeg','.png','.webp'];
   const placeholder = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="100%" height="100%" fill="#2b2230"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#a8a1b2" font-size="24">photo missing</text></svg>`);
 
-  function ensureImg(imgEl, desiredSrc){
-    if(!imgEl) return;
-    // try set to desired
-    if(desiredSrc) imgEl.src = desiredSrc;
-    // handle error -> placeholder
-    imgEl.addEventListener('error', function onErr(){
-      console.warn('Image failed to load:', desiredSrc || imgEl.src);
-      imgEl.removeEventListener('error', onErr);
-      imgEl.src = placeholder;
+  // try to set img src to the first existing variant
+  async function findExisting(pathCandidates){
+    for(const p of pathCandidates){
+      try{
+        const res = await fetch(p, { method: 'HEAD' });
+        if(res && res.ok) return p;
+      }catch(e){
+        // fetch failed (CORS or network) - try to load via Image probe
+        const ok = await probeImage(p);
+        if(ok) return p;
+      }
+    }
+    return null;
+  }
+  function probeImage(url){
+    return new Promise(resolve=>{
+      const img = new Image();
+      img.onload = ()=> resolve(true);
+      img.onerror = ()=> resolve(false);
+      img.src = url;
     });
-    // probe HEAD (best-effort, may be blocked by CORS)
-    fetch(imgEl.src, { method: 'HEAD' }).then(r=>{
-      if(!r.ok) { console.warn('Image HEAD returned', r.status, imgEl.src); imgEl.src = placeholder; }
-    }).catch(()=>{ /* ignore network/CORS errors, fallback handled by onerror */ });
   }
 
-  expected.forEach((p, i) => {
-    const galImg = document.querySelectorAll('#gallery img')[i];
-    if(galImg) ensureImg(galImg, p);
-    if(i === 0){
-      const main = $('mainPhoto');
-      if(main) ensureImg(main, p);
+  // for each base name, produce candidate paths (case-insensitive attempts)
+  baseNames.forEach(async (bn, idx) => {
+    const candidates = [];
+    for(const ext of exts){
+      candidates.push(`/assets/${bn}${ext}`);
+      candidates.push(`/assets/${bn.toUpperCase()}${ext}`);
+      candidates.push(`/assets/${bn.charAt(0).toUpperCase() + bn.slice(1)}${ext}`);
+    }
+    // try to find one that exists
+    const found = await findExisting(candidates);
+    // apply to gallery and main photo
+    const galleryImg = document.querySelectorAll('#gallery img')[idx];
+    if(found){
+      if(galleryImg) galleryImg.src = found;
+      if(idx === 0){
+        const main = $('mainPhoto'); if(main) main.src = found;
+      }
+    } else {
+      // not found -> placeholder
+      if(galleryImg) galleryImg.src = placeholder;
+      if(idx === 0){
+        const main = $('mainPhoto'); if(main) main.src = placeholder;
+      }
+      console.warn('Image not found for', bn, 'checked', candidates);
     }
   });
 })();
 
-/* ---------- Reasons (unique queue) ---------- */
+/* =====================================================
+   Reasons generator (unique until exhausted) + added cat reason
+   ===================================================== */
 const reasonsFull = [
   'you','your smile','your personality','your laugh','your sleepy voice','your voice','your face','your body','your jokes','your music taste','your love for diet coke','your love for kinderjoy','your love for me','your love for waffles','your love for pizza','your love for lego flowers','your way of life','your ideologies','your perspectives','you for make me feel like im cared for','you for putting up with me','you for always trying your best','for your patience','your eyes','YOUR EYESSSSSSSSS I LOVE THEM THEY ARE PERFECT','how you rarely give up on your friendships','how you make me want to open up','how pretty you are','how beautiful you are','how stunning you are','how gorgeous you are','how lovely you are','how adorable you are','how cute you are','i love your nose','i love your cheeks','i love everything about you','i love your love with billie eilish','i love your liking of d4vd’s songs','i love your liking of cas’s songs','i love your liking of conan grey’s songs','i love your liking of olivias songs','i love how i make you smile','how you tell me things','how you trust me','how you are my girlfriend','your jealousy','your possessiveness','for being my first ever dandiya partner','for being my first time for holding hands with a girl','for matching fits with me','your dedication','your ability to be super funny sometimes lols','how you ghosted me😝😝','how you un ghosted me🤣😉','how you started saying lols','how you started saying 124','the way you say orange','how you tell me about your dreams','for telling me your lifes story','how you put in efforts','for believing in me','for reading the paragraphs i send','for giving me a reason to smile','for being my first girlfriend','for giving me the privilege of being your boyfriend','for existing','for breathing','for your (maybe)new love for sunflowers😜😜😜😜😜','for being my baby','for being my sweetheart','for being my jaan','for always listening to me','for being my wallpaper','for making me your wallpaper','for making me want to fall in love with you','for giving me a chance','for not ghosting me again😛😛','for being friends with shambhavi cuz if you werent then who knows😛😛','for being my snehaaaaaaaaa','for making me feel SO HAPPPYYY ALWAYS','for making me want to be a better human','for giving me the 1 person i trust the most','for being the best person i met this year','for being able to call you mine','how you somehhoe cut your mouth with a knife while eating the oreo silk i gave','for making me want to open up','for making me want to feel things','for making me cry lol (IN THE BEST WAY POSSIBLE)','hoe you remember stuff about me','how we can be honest with each other','how i FEEL WHILE TALKING TO YOU','how you ALWAYSSSDD LISTEN TO MY JOKES','how you never make me feel sidelines','how you prioritise me 😛😛😛','for being my bestfriend','for being close to me','how you are able to make communicate properly','for giving a person to dedicate this website to','for playing roblox with me','for playing scribl me','for you love of the song the winner takes it all😝😝😝😝','how you always win when we play scribl😉😉','how we try to find roblox games at night','FOR BEING YOU','FOR LOVING THE WAY YOU LOVE','FOR JUST EVERY SINGLE THING','SNEHA GARG I LOVE YOU',
-  'i love ur love for cats' /* newly requested reason */
+  'i love ur love for cats' // newly added reason
 ];
+
 function shuffle(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
 let reasonsQueue = shuffle(reasonsFull);
 function nextReason(){ if(reasonsQueue.length===0) reasonsQueue = shuffle(reasonsFull); return reasonsQueue.shift(); }
@@ -224,7 +273,7 @@ function addThree(){ for(let i=0;i<3;i++) addReason(); fireConfetti(40); }
 $('reasonOne') && $('reasonOne').addEventListener('click', addReason);
 $('reasonThree') && $('reasonThree').addEventListener('click', addThree);
 
-/* show all */
+/* Show all reasons modal */
 $('showAllReasons') && $('showAllReasons').addEventListener('click', ()=>{
   const modal = $('modalBg'), content = $('modalContent'); if(!modal||!content) return;
   content.innerHTML = '<h3 style="margin-top:0;color:white">All the reasons</h3>';
@@ -233,9 +282,10 @@ $('showAllReasons') && $('showAllReasons').addEventListener('click', ()=>{
   const foot = document.createElement('div'); foot.style.marginTop='12px'; foot.style.color='var(--muted)'; foot.textContent="(couldn't load every single tiny reason here lol)";
   content.appendChild(list); content.appendChild(foot); modal.classList.add('show');
 });
-$('closeModal') && $('closeModal').addEventListener('click', ()=> $('modalBg').classList.remove('show'));
 
-/* ---------- Gallery modal & portrait ---------- */
+/* =====================================================
+   Gallery modal & portrait cycle
+   ===================================================== */
 qAll('#gallery img').forEach(img => img.addEventListener('click', ()=>{
   const modal = $('modalBg'), content = $('modalContent'); if(!modal||!content) return;
   content.innerHTML = ''; const big = document.createElement('img'); big.src = img.src; big.style.maxWidth='92%'; big.style.display='block'; big.style.margin='8px auto'; content.appendChild(big); modal.classList.add('show');
@@ -243,15 +293,19 @@ qAll('#gallery img').forEach(img => img.addEventListener('click', ()=>{
 const photos = ['/assets/photo1.jpg','/assets/photo2.jpg','/assets/photo3.jpg','/assets/photo4.jpg','/assets/photo5.jpg','/assets/photo6.jpg'];
 let ph = 0; $('mainPhoto') && $('mainPhoto').addEventListener('click', ()=>{ ph = (ph+1)%photos.length; $('mainPhoto').src = photos[ph]; spawnHearts(6); });
 
-/* ---------- Send note copy ---------- */
+/* =====================================================
+   Send note copy to DM (UX)
+   ===================================================== */
 $('sendNote') && $('sendNote').addEventListener('click', ()=>{
   const v = $('noteInput') && $('noteInput').value.trim(); if(!v) return alert('Write a short note first');
   const dm = `hey Sneha, check this note I left for you: "${v}" — luv, Sameer`;
-  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(dm).then(()=>alert('Note copied — paste in DMs 😉')).catch(()=>prompt('Copy this DM text:', dm));
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(dm).then(()=>showToast('Note copied — paste in DMs 😉',2000)).catch(()=>prompt('Copy this DM text:', dm));
   else prompt('Copy this DM text:', dm);
 });
 
-/* ---------- Handwritten letters ---------- */
+/* =====================================================
+   Handwritten letters (SVG draw)
+   ===================================================== */
 const letters = [
   `<svg viewBox="0 0 600 120"><path class="hand" d="M10 80 C120 10 200 10 300 80 C380 150 460 20 590 80" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
   `<svg viewBox="0 0 600 120"><path class="hand" d="M10 70 C120 10 240 20 340 80 C420 140 520 30 590 70" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
@@ -263,35 +317,57 @@ $('prevLetter') && $('prevLetter').addEventListener('click', ()=>{ letterIndex =
 $('nextLetter') && $('nextLetter').addEventListener('click', ()=>{ letterIndex = (letterIndex+1)%letters.length; showLetter(letterIndex); });
 showLetter(letterIndex);
 
-/* ---------- Reaction GIFs ---------- */
-qAll('.react-btn').forEach(btn => {
-  btn.addEventListener('click', (ev) => {
-    const gif = btn.dataset.gif; if(!gif) return;
-    const x = (ev.clientX || window.innerWidth/2) - 80;
-    const y = (ev.clientY || window.innerHeight/2) - 80;
-    spawnGif(gif, x, y); fireConfetti(20);
-  });
+/* =====================================================
+   Reaction GIFs: cute -> cat gif with 2s toast
+   dance -> working gif
+   ===================================================== */
+function spawnGif(url,x,y){
+  const d = document.createElement('div'); d.style.position='fixed'; d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.width = '160px'; d.style.height = '160px'; d.style.zIndex = 1200; d.style.pointerEvents='none';
+  d.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.6)"/>`;
+  document.body.appendChild(d);
+  d.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:'translateY(-120px) scale(.6)',opacity:0}],{duration:2200,easing:'cubic-bezier(.2,.9,.2,1)'});
+  setTimeout(()=>d.remove(),2300);
+}
+document.getElementById('cuteBtn') && document.getElementById('cuteBtn').addEventListener('click', (e)=> {
+  const gif = e.currentTarget.dataset.gif;
+  spawnGif(gif, (e.clientX || window.innerWidth/2)-80, (e.clientY || window.innerHeight/2)-80);
+  showToast('meow! 🐱', 1900); fireConfetti(18);
 });
-function spawnGif(url,x,y){ const d=document.createElement('div'); d.style.position='fixed'; d.style.left=x+'px'; d.style.top=y+'px'; d.style.width='160px'; d.style.height='160px'; d.style.zIndex=1200; d.style.pointerEvents='none'; d.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.6)"/>`; document.body.appendChild(d); d.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:'translateY(-120px) scale(.6)',opacity:0}],{duration:2200,easing:'cubic-bezier(.2,.9,.2,1)'}); setTimeout(()=>d.remove(),2300); }
+document.getElementById('danceBtn') && document.getElementById('danceBtn').addEventListener('click', (e)=>{
+  const gif = e.currentTarget.dataset.gif;
+  spawnGif(gif, (e.clientX || window.innerWidth/2)-80, (e.clientY || window.innerHeight/2)-80);
+  showToast('let\'s dance 💃', 1400); fireConfetti(12);
+});
+document.getElementById('loveBtn') && document.getElementById('loveBtn').addEventListener('click', (e)=>{
+  const gif = e.currentTarget.dataset.gif;
+  spawnGif(gif, (e.clientX || window.innerWidth/2)-80, (e.clientY || window.innerHeight/2)-80);
+  showToast('❤️', 1200); fireConfetti(14);
+});
 
-/* ---------- Floating hearts ---------- */
+/* =====================================================
+   Floating hearts on clicks
+   ===================================================== */
 document.addEventListener('click', (ev)=>{ spawnHeartAt(ev.clientX, ev.clientY); });
 function spawnHeartAt(x,y){ const e=document.createElement('div'); e.textContent='💖'; e.style.position='fixed'; e.style.left=(x-12)+'px'; e.style.top=(y-12)+'px'; e.style.zIndex=1100; e.style.fontSize='20px'; e.style.pointerEvents='none'; document.body.appendChild(e); const d=900+Math.random()*900; e.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:`translateY(-${80+Math.random()*160}px) scale(.4)`,opacity:0}],{duration:d,easing:'cubic-bezier(.2,.9,.2,1)'}); setTimeout(()=>e.remove(), d+60); }
 function spawnHearts(n=8){ for(let i=0;i<n;i++) spawnHeartAt(window.innerWidth*(0.25+Math.random()*0.5), window.innerHeight*(0.25+Math.random()*0.5)); }
 
-/* ---------- Confetti (canvas) ---------- */
-const confettiCanvas = $('confetti'); const confCtx = confettiCanvas ? confettiCanvas.getContext('2d') : null;
-let W = confettiCanvas ? confettiCanvas.width = innerWidth : 0;
-let H = confettiCanvas ? confettiCanvas.height = innerHeight : 0;
-window.addEventListener('resize', ()=>{ if(confettiCanvas){ W=confettiCanvas.width=innerWidth; H=confettiCanvas.height=innerHeight; }});
+/* =====================================================
+   Confetti (canvas) - fixed names and safe init
+   ===================================================== */
+const confCanvas = $('confetti'); const confCtx = confCanvas ? confCanvas.getContext('2d') : null;
+let W = confCanvas ? confCanvas.width = innerWidth : 0; let H = confCanvas ? confCanvas.height = innerHeight : 0;
+window.addEventListener('resize', ()=>{ if(confCanvas){ W=confCanvas.width=innerWidth; H=confCanvas.height=innerHeight; }});
 function rand(min,max){ return Math.random()*(max-min)+min; }
 let confettiParts = [];
 class Confetto { constructor(){ this.x = rand(0,W); this.y = rand(-H,0); this.size = rand(6,14); this.color = `hsl(${Math.floor(rand(0,360))}deg 70% 60%)`; this.vx = rand(-2,2); this.vy = rand(2,6); } update(){ this.x += this.vx; this.y += this.vy; this.vy *= 0.998; } draw(){ if(!confCtx) return; confCtx.fillStyle = this.color; confCtx.fillRect(this.x,this.y,this.size,this.size*0.6); } }
 function renderConf(){ if(!confCtx) return; confCtx.clearRect(0,0,W,H); for(const p of confettiParts){ p.update(); p.draw(); } confettiParts = confettiParts.filter(p=> p.y < H + 60); }
-function fireConfetti(n=80){ if(!confettiCanvas || !confCtx) return; for(let i=0;i<n;i++) confettiParts.push(new Confetto()); if(!window._confettiInt){ window._confettiInt = setInterval(renderConf,1000/60); setTimeout(()=>{ clearInterval(window._confettiInt); window._confettiInt=null; confettiParts=[]; if(confCtx) confCtx.clearRect(0,0,W,H); },5000); } }
+function fireConfetti(n=80){ if(!confCanvas || !confCtx) return; for(let i=0;i<n;i++) confettiParts.push(new Confetto()); if(!window._confettiInt){ window._confettiInt = setInterval(renderConf,1000/60); setTimeout(()=>{ clearInterval(window._confettiInt); window._confettiInt=null; confettiParts=[]; if(confCtx) confCtx.clearRect(0,0,W,H); },5000); } }
 function createFireworks(q=6){ for(let i=0;i<q;i++){ for(let j=0;j<12;j++){ const s=document.createElement('div'); s.style.position='fixed'; s.style.left=(30+Math.random()*40)+'%'; s.style.top=(30+Math.random()*40)+'%'; s.style.width='6px'; s.style.height='6px'; s.style.borderRadius='50%'; s.style.background='white'; s.style.zIndex=980; document.body.appendChild(s); const dur=700+Math.random()*900; s.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:`translateY(-${60+Math.random()*120}px) scale(.1)`,opacity:0}],{duration:dur}); setTimeout(()=>s.remove(), dur+80); } } }
 
-/* ---------- Audio: local + WebAudio analysis ---------- */
+/* =====================================================
+   Audio: local song.mp3 (preferred) with WebAudio analysis,
+   fallback to YouTube iframe if local missing or blocked
+   ===================================================== */
 const localAudio = $('localAudio');
 let audioCtx=null, analyser=null, sourceNode=null, dataArray=null, bufferLength=0;
 function initLocalAudioAnalysis(){
@@ -304,155 +380,132 @@ function initLocalAudioAnalysis(){
     sourceNode.connect(analyser); analyser.connect(audioCtx.destination);
     (function loop(){ if(!analyser) return; analyser.getByteFrequencyData(dataArray); let sum=0; for(let i=0;i<dataArray.length;i++) sum += dataArray[i]*dataArray[i]; const rms = Math.sqrt(sum / dataArray.length) / 255; applyAudioPulse(rms); requestAnimationFrame(loop); })();
     return true;
-  }catch(e){ console.warn('Local audio analysis init failed', e); return false; }
+  }catch(e){ console.warn('local audio analysis init failed', e); return false; }
 }
 let lastPulse = 0;
 function applyAudioPulse(level){ document.body.style.filter = `saturate(${1 + level*0.2})`; const now = performance.now(); if(level > 0.35 && (now - lastPulse > 700)){ fireConfetti(18); spawnHearts(10); lastPulse = now; } }
 
-/* ---------- YouTube fallback (iframe API) ---------- */
+/* ---------- YouTube fallback ---------- */
 let ytPlayer=null;
 const YT_ID = 'iggmiF7DNoM';
-(function loadYT(){ if(window.YT && window.YT.Player){ initYT(); return; } const tag=document.createElement('script'); tag.src="https://www.youtube.com/iframe_api"; document.head.appendChild(tag); window.onYouTubeIframeAPIReady = initYT; })();
-function initYT(){ const wrap = $('ytPlayerWrap'); if(!wrap) return; const div=document.createElement('div'); div.id='ytPlayer'; wrap.appendChild(div); ytPlayer = new YT.Player('ytPlayer',{height:'180',width:'320',videoId:YT_ID,playerVars:{controls:1,modestbranding:1,rel:0}}); }
+(function loadYT(){
+  if(window.YT && window.YT.Player){ initYT(); return; }
+  const tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(tag);
+  window.onYouTubeIframeAPIReady = initYT;
+})();
+function initYT(){
+  const wrap = $('ytPlayerWrap'); if(!wrap) return;
+  const div = document.createElement('div'); div.id = 'ytPlayer'; wrap.appendChild(div);
+  ytPlayer = new YT.Player('ytPlayer', {
+    height: '180', width: '320', videoId: YT_ID,
+    playerVars: { controls: 1, modestbranding: 1, rel: 0 }
+  });
+}
 
-/* ---------- Unified play logic ---------- */
+/* Unified play function (user gesture must call) */
 async function playMusic(){
-  // try local first
-  if(localAudio && localAudio.src && localAudio.readyState !== 0){
+  // prefer local if available and loaded
+  if(localAudio && localAudio.src){
     try{
       if(!audioCtx) initLocalAudioAnalysis();
       await localAudio.play();
       return 'local';
-    }catch(err){ console.warn('Local audio play failed', err); }
+    }catch(err){ console.warn('localAudio play failed', err); }
   }
-  // fallback to yt
-  if(ytPlayer && ytPlayer.playVideo){ try{ ytPlayer.seekTo(0); ytPlayer.playVideo(); return 'yt'; }catch(e){ console.warn('YT play error', e); } }
+  if(ytPlayer && ytPlayer.playVideo){ try{ ytPlayer.seekTo(0); ytPlayer.playVideo(); return 'yt'; }catch(e){ console.warn('yt play failed', e); } }
   return null;
 }
 
-/* ---------- Lyric sync scaffold ---------- */
+/* lyric sync scaffold */
 let lyricMode=false, lyricIntervalId=null;
 $('lyricToggle') && $('lyricToggle').addEventListener('click', ()=>{ lyricMode = !lyricMode; $('lyricToggle').textContent = `Lyric mode: ${lyricMode? 'on':'off'}`; if(!lyricMode) $('lyricBox').style.display='none'; });
-const lyricsArray = []; // fill with [seconds, "line"] if you want lyric sync
+const lyricsArray = []; // fill as [sec, "line"] to use lyric sync
 function startLyricSync(getTimeFn){
   if(!getTimeFn) return null;
   if(lyricIntervalId) clearInterval(lyricIntervalId);
   const box = $('lyricBox'); box.style.display = lyricMode ? 'block' : 'none';
-  return setInterval(()=>{ if(!lyricMode) return; const t = Math.floor(getTimeFn()); let current=''; for(let i=0;i<lyricsArray.length;i++){ if(t >= Math.floor(lyricsArray[i][0])) current = lyricsArray[i][1]; else break;} if(current){ box.textContent = current; box.style.display='block'; } else box.style.display='none'; }, 300);
+  return setInterval(()=>{ if(!lyricMode) return; const t = Math.floor(getTimeFn()); let current=''; for(let i=0;i<lyricsArray.length;i++){ if(t >= Math.floor(lyricsArray[i][0])) current = lyricsArray[i][1]; else break; } if(current){ box.textContent = current; box.style.display='block'; } else box.style.display='none'; }, 300);
 }
 
-/* ---------- Open Surprise (user gesture) ---------- */
+/* =====================================================
+   Open Surprise: user gesture that starts music & gyro permission
+   ===================================================== */
+function tryEnableDeviceOrientation(){
+  if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    DeviceOrientationEvent.requestPermission().then(permissionState => {
+      if(permissionState === 'granted'){ window.addEventListener('deviceorientation', onOrientation, {passive:true}); showToast('Gyro enabled', 1500); }
+      else console.warn('Device orientation permission denied');
+    }).catch(err => console.warn('DeviceOrientation request failed', err));
+  } else {
+    window.addEventListener('deviceorientation', onOrientation, {passive:true});
+  }
+}
 $('enterBtn') && $('enterBtn').addEventListener('click', async ()=>{
-  // hide overlay
-  const overlay = $('introOverlay'); if(overlay) overlay.style.display = 'none';
-  // request DeviceOrientation permission for iOS if needed (on first gesture)
+  $('introOverlay') && ($('introOverlay').style.display='none');
+  // request gyro on first gesture
   tryEnableDeviceOrientation();
-  // play music
+  // attempt play
   const which = await playMusic();
-  if(which === 'local'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> localAudio.currentTime); }
-  else if(which === 'yt'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0); }
-  // fireworks
+  if(which === 'local'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> localAudio.currentTime); showToast('Playing local song', 1400); }
+  else if(which === 'yt'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0); showToast('Playing via YouTube', 1400); }
+  else showToast('No audio found — try uploading song.mp3 or check YouTube fallback', 2200);
   spawnHearts(24); fireConfetti(140); createFireworks(10);
 });
 $('openSurpriseInline') && $('openSurpriseInline').addEventListener('click', ()=> $('enterBtn').click());
-$('playSongBtn') && $('playSongBtn').addEventListener('click', async ()=>{ const which = await playMusic(); if(which === 'local'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> localAudio.currentTime); } else { if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0); } });
+$('playSongBtn') && $('playSongBtn').addEventListener('click', async ()=>{ const which = await playMusic(); if(which === 'local'){ if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> localAudio.currentTime); showToast('Playing local song',1200); } else { if(lyricIntervalId) clearInterval(lyricIntervalId); lyricIntervalId = startLyricSync(()=> (ytPlayer && ytPlayer.getCurrentTime) ? ytPlayer.getCurrentTime() : 0); showToast('Playing via YouTube',1200); } });
+
+/* Celebrate */
 $('celebrateBtn') && $('celebrateBtn').addEventListener('click', ()=>{ spawnHearts(40); fireConfetti(220); createFireworks(14); });
 
-/* ---------- Petals loop ---------- */
-(function spawnPetals(){
-  const petals = ['🌸','🌺','🌼','💐'];
-  for(let i=0;i<10;i++){
-    const p = document.createElement('div'); p.textContent = petals[Math.floor(Math.random()*petals.length)];
-    p.style.position='fixed'; p.style.left = (5 + Math.random()*90) + '%'; p.style.top = (-10 - Math.random()*40) + '%'; p.style.zIndex = 50; p.style.fontSize = (16 + Math.random()*18) + 'px';
-    document.body.appendChild(p);
-    const dur = 7000 + Math.random()*9000;
-    p.animate([{transform:'translateY(0) rotate(0) scale(0.9)', opacity:1},{transform:`translateY(${100+Math.random()*120}vh) rotate(${Math.random()*720-360}deg) scale(0.6)`, opacity:0}], { duration: dur, easing:'linear' });
-    setTimeout(()=> p.remove(), dur+200);
-  }
-  setTimeout(spawnPetals, 8000);
-})();
+/* =====================================================
+   Parallax: mouse + gyro combined (smooth lerp)
+   ===================================================== */
+const appWrap = $('appWrap');
+let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+const maxTranslate = 18, ease = 0.12;
+function onMouse(e){ const cx = window.innerWidth/2, cy = window.innerHeight/2; const dx = (e.clientX - cx)/cx; const dy = (e.clientY - cy)/cy; targetX = -dx * maxTranslate; targetY = -dy * maxTranslate; }
+function onOrientation(ev){ const gamma = ev.gamma || 0, beta = ev.beta || 0; const nx = clamp(gamma/30, -1, 1), ny = clamp(beta/30, -1, 1); targetX = targetX + (-nx * maxTranslate * 0.9); targetY = targetY + (ny * maxTranslate * 0.9); }
+function rafLoop(){ currentX += (targetX - currentX) * ease; currentY += (targetY - currentY) * ease; if(appWrap) appWrap.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`; requestAnimationFrame(rafLoop); }
+window.addEventListener('mousemove', onMouse, {passive:true});
+// request gyro permission on first gesture if needed
+function bindGyroOnce(){ window.removeEventListener('touchstart', bindGyroOnce); window.removeEventListener('click', bindGyroOnce); tryEnableDeviceOrientation(); }
+window.addEventListener('touchstart', bindGyroOnce, {passive:true}); window.addEventListener('click', bindGyroOnce, {passive:true});
+requestAnimationFrame(rafLoop);
 
-/* ---------- Parallax: combined mouse + gyro with permission ---------- */
-(function parallaxGyro(){
-  const container = $('appWrap') || document.body;
-  let targetX = 0, targetY = 0;
-  let currentX = 0, currentY = 0;
-  const maxTranslate = 18;
-  const ease = 0.12;
-
-  function onMouse(e){
-    const cx = window.innerWidth/2, cy = window.innerHeight/2;
-    const dx = (e.clientX - cx)/cx;
-    const dy = (e.clientY - cy)/cy;
-    targetX = -dx * maxTranslate;
-    targetY = -dy * maxTranslate;
-  }
-
-  function onOrientation(ev){
-    const gamma = ev.gamma || 0; const beta = ev.beta || 0;
-    const nx = clamp(gamma/30, -1, 1);
-    const ny = clamp(beta/30, -1, 1);
-    // orientation influences more (scale)
-    targetX = targetX + (-nx * maxTranslate * 0.9);
-    targetY = targetY + (ny * maxTranslate * 0.9);
-  }
-
-  function rafTick(){
-    currentX += (targetX - currentX) * ease;
-    currentY += (targetY - currentY) * ease;
-    container.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-    requestAnimationFrame(rafTick);
-  }
-
-  function tryEnableDeviceOrientation(){
-    if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
-      DeviceOrientationEvent.requestPermission().then(permissionState => {
-        if(permissionState === 'granted'){
-          window.addEventListener('deviceorientation', onOrientation, {passive:true});
-        } else console.warn('Device orientation permission denied');
-      }).catch(err => console.warn('DeviceOrientation request failed', err));
-    } else {
-      window.addEventListener('deviceorientation', onOrientation, {passive:true});
-    }
-  }
-
-  function bindOnceForGyro(){
-    window.removeEventListener('touchstart', bindOnceForGyro);
-    window.removeEventListener('click', bindOnceForGyro);
-    tryEnableDeviceOrientation();
-  }
-  window.addEventListener('mousemove', onMouse, {passive:true});
-  window.addEventListener('touchstart', bindOnceForGyro, {passive:true});
-  window.addEventListener('click', bindOnceForGyro, {passive:true});
-  requestAnimationFrame(rafTick);
-})();
-
-/* ---------- Modal background click close ---------- */
+/* =====================================================
+   Modal close BG
+   ===================================================== */
 $('modalBg') && $('modalBg').addEventListener('click', (e)=>{ if(e.target === $('modalBg')) $('modalBg').classList.remove('show'); });
+$('closeModal') && $('closeModal').addEventListener('click', ()=> $('modalBg').classList.remove('show'));
 
-/* ---------- Lego egg easter egg ---------- */
+/* =====================================================
+   Lego egg (tiny secret)
+   ===================================================== */
 (function legoEgg(){
   const egg = $('legoEgg'); if(!egg) return; let clicks=0;
   egg.addEventListener('click', ()=>{
     clicks++; egg.style.opacity = 0.28;
     if(clicks>=3){
-      const m=$('modalBg'), c=$('modalContent'); if(!m||!c) return;
+      const m = $('modalBg'), c = $('modalContent'); if(!m||!c) return;
       c.innerHTML = `<h3 style="margin-top:0;color:white">Tiny Lego Flowers 🌼</h3><p style="color:var(--muted)">hey love hope you loved the flowers</p><div style="display:flex;gap:8px;justify-content:center;margin-top:12px">` + Array.from({length:5}).map((_,i)=>`<div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,hsl(${i*60} 80% 60%), hsl(${i*60} 80% 50%));">🌸</div>`).join('') + `</div>`;
       m.classList.add('show'); spawnHearts(28); fireConfetti(120); clicks=0;
     }
   });
 })();
 
-/* ---------- Initial flourishes ---------- */
+/* initial flourish */
 setTimeout(()=> spawnHearts(8), 900);
 
-/* ---------- Safe: hide intro if video missing quickly (pre-check) ---------- */
-(function ensureVideoLoads(){
+/* =====================================================
+   Safe video load check (console warning if missing)
+   ===================================================== */
+(function checkVideo(){
   const v = $('introVideo'); if(!v) return;
-  v.addEventListener('error', ()=>{ console.warn('Intro video failed to load: /assets/video.mp4'); /* keep overlay but user can still press Open Surprise to proceed */ });
+  v.addEventListener('error', ()=>{ console.warn('Intro video failed to load: /assets/video.mp4'); showToast('Intro video not found — check /assets/video.mp4',2200); });
+  // attempt to set muted autoplay preview (will not play without user gesture on many browsers)
+  v.load();
 })();
 
-/* ---------- Close: end of script ---------- */
 </script>
 </body>
 </html>
