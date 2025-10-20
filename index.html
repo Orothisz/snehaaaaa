@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Sneha — Surprise (YouTube audio, overlay-preserve)</title>
+<title>Sneha — Surprise (YouTube audio, immediate start)</title>
 <meta name="description" content="Surprise for Sneha — built by Sameer" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
@@ -14,9 +14,10 @@
   html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg1),#3b0a4a 40%,var(--bg2));color:var(--text);font-family:Poppins,system-ui,Arial;-webkit-font-smoothing:antialiased}
   *{box-sizing:border-box}
 
-  /* Intro overlay - stays until video ends */
+  /* Intro overlay - used only until user clicks */
   #introOverlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,5,8,0.82);z-index:9999;padding:18px}
-  #introVideo{width:92%;max-width:980px;border-radius:12px;box-shadow:0 30px 120px rgba(0,0,0,0.6)}
+  .intro-video-wrap{display:flex;align-items:center;justify-content:center;padding:12px}
+  .intro-video{width:90%;max-width:900px;height:auto;max-height:60vh;border-radius:12px;box-shadow:0 30px 120px rgba(0,0,0,0.6);object-fit:cover}
   #enterBtn{margin-top:16px;padding:12px 20px;border-radius:12px;border:0;font-weight:800;background:linear-gradient(90deg,#ff9bbf,var(--accent));color:#000;cursor:pointer}
 
   /* Layout */
@@ -64,11 +65,13 @@
 </head>
 <body>
 
-<!-- Intro overlay - stays visible while intro plays -->
+<!-- Intro overlay - shown until user clicks; will be hidden immediately on click -->
 <div id="introOverlay" aria-hidden="false">
-  <video id="introVideo" src="/assets/video.mp4" muted playsinline preload="auto" crossorigin="anonymous"></video>
+  <div class="intro-video-wrap">
+    <video id="introVideo" class="intro-video" src="/assets/video.mp4" muted playsinline preload="metadata" poster="/assets/video-poster.jpg"></video>
+  </div>
   <h2 style="font-family:'Great Vibes',cursive;font-size:56px;color:var(--accent);margin:14px 0 6px">Hey Sneha</h2>
-  <p style="color:rgba(255,255,255,0.92);max-width:900px;text-align:center;margin:0 0 12px">Last night was something really special. Press <strong>Open Surprise</strong> when you're ready — this will start the music and the intro.</p>
+  <p style="color:rgba(255,255,255,0.92);max-width:900px;text-align:center;margin:0 0 12px">Last night was something really special. Press <strong>Open Surprise</strong> when you're ready — this will start the music and the intro (overlay will close immediately).</p>
   <button id="enterBtn">Open Surprise</button>
 </div>
 
@@ -337,8 +340,8 @@ function fireConfetti(n=80){ if(!confettiCanvas || !confCtx) return; for(let i=0
 function createFireworks(q=6){ for(let i=0;i<q;i++){ for(let j=0;j<12;j++){ const s=document.createElement('div'); s.style.position='fixed'; s.style.left=(30+Math.random()*40)+'%'; s.style.top=(30+Math.random()*40)+'%'; s.style.width='6px'; s.style.height='6px'; s.style.borderRadius='50%'; s.style.background='white'; s.style.zIndex=980; document.body.appendChild(s); const dur=700+Math.random()*900; s.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:`translateY(-${60+Math.random()*120}px) scale(.1)`,opacity:0}],{duration:dur}); setTimeout(()=>s.remove(), dur+80); } } }
 
 /* -------------------------
-   YouTube player (audio only, used by Open Surprise and Play song)
-   - Uses id iggmiF7DNoM
+   YouTube player (audio only)
+   - Uses video id iggmiF7DNoM
    ------------------------- */
 let ytPlayer = null;
 const YT_ID = 'iggmiF7DNoM';
@@ -380,30 +383,33 @@ async function playYouTube(){
 
 /* -------------------------
    Intro overlay flow:
-   - User clicks Open Surprise -> start intro video + start YouTube audio
-   - Keep overlay visible until intro video 'ended' event
-   - When video ends, hide overlay and trigger celebration
+   - User clicks Open Surprise -> UI starts immediately (overlay hidden)
+   - We attempt to play the intro video (muted) to satisfy autoplay
+   - Then we pause the intro video and hide the overlay immediately
+   - We also attempt to start YouTube audio
    ------------------------- */
 $('enterBtn') && $('enterBtn').addEventListener('click', async ()=>{
   const v = $('introVideo');
-  // try to play the video; keep overlay visible until it ends
+  // try to play the video (muted) - useful to gain user gesture
   try{
-    // play video (muted autoplay allowed)
-    await v.play().catch(()=>{ /* some browsers still require gesture but this is inside click */ });
-  }catch(e){ console.warn('intro video play failed', e); }
-  // start YouTube audio (must be from user gesture)
+    if(v && v.play){ await v.play().catch(()=>{}); }
+  }catch(e){ console.warn('intro video play attempt failed', e); }
+  // Hide overlay IMMEDIATELY (user asked site to start despite video)
+  const overlay = $('introOverlay'); if(overlay) overlay.style.display = 'none';
+
+  // pause/reset video (we don't want it to keep playing in background)
+  try{ if(v){ v.pause(); v.currentTime = 0; } }catch(e){ /* ignore */ }
+
+  // attempt YouTube audio start
   const ok = await playYouTube();
-  if(!ok) showBottomToast('Could not start YouTube playback — please press Play', 2200);
-  // when video ends -> hide overlay and celebrate
-  v.onended = function(){
-    const overlay = $('introOverlay'); if(overlay) overlay.style.display='none';
-    spawnHearts(20); fireConfetti(120); createFireworks(8);
-  };
-  // in case video fails to load or ends instantly, set a fallback timeout to remove overlay after 18s
-  setTimeout(()=>{ if($('introOverlay') && $('introOverlay').style.display !== 'none'){ $('introOverlay').style.display='none'; spawnHearts(12); fireConfetti(80); } }, 18000);
+  if(!ok) showBottomToast('Could not auto-start YouTube — press Play', 2200);
+  else showBottomToast('Playing song', 1200);
+
+  // little celebration when overlay closed
+  spawnHearts(18); fireConfetti(120); createFireworks(6);
 });
 
-/* inline Open Surprise button in UI */
+/* inline Open Surprise button in UI (same behavior) */
 $('openSurpriseInline') && $('openSurpriseInline').addEventListener('click', ()=> $('enterBtn').click());
 
 /* Play song button - just triggers YouTube play */
