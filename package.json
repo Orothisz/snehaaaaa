@@ -1,0 +1,32 @@
+{
+  "name": "sneha-surprise",
+  "version": "1.0.0",
+  "description": "A surprise website built by Sameer Jhamb for Sneha — featuring animations, YouTube audio, love notes, and memories ❤️",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "preview": "npx live-server --port=3000 --open=index.html",
+    "build": "echo 'Static site — no build step required'",
+    "deploy": "netlify deploy --prod --dir=."
+  },
+  "keywords": [
+    "sneha",
+    "love",
+    "surprise",
+    "sameer-jhamb",
+    "romantic-site",
+    "netlify",
+    "vercel",
+    "static"
+  ],
+  "author": "Sameer Jhamb",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.1",
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
