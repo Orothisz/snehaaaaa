@@ -1,0 +1,5 @@
+# --- Primary Route Rules ---
+
+# Serve the main page for all routes (like vercel.json did)
+# This ensures deep links always show index.html
+/*    /index.html   200
