@@ -1,0 +1,50 @@
+# netlify.toml - safe, minimal, and includes SPA redirect + headers for assets
+# Put this in the repository root (same folder as index.html)
+
+[build]
+  # publish directory: '.' means publish site root
+  publish = "."
+  # no build command for static HTML site
+  command = ""
+
+# Redirect everything to index.html (SPA friendly)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true
+
+# Long cache for images & static assets in /assets/*
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Shorter cache for video file so you can iterate
+[[headers]]
+  for = "/assets/video.mp4"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=86400"
+
+# Shorter cache for audio file
+[[headers]]
+  for = "/song.mp3"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=86400"
+
+# Ensure index is not aggressively cached
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# Security headers for everything
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
